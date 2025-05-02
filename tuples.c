@@ -7,7 +7,7 @@ bool	equal(float a, float b)
 	return (false);
 }
 
-bool	compare_tuple(tuple a, tuple b)
+bool	equal_tuple(tuple a, tuple b)
 {
 	if (equal(a.x, b.x) && equal(a.y, b.y) && equal(a.z, b.z) && equal(a.w, b.w))
 		return (true);

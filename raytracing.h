@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <math.h>
 
-#define EPSILON 0.00001
+#define EPSILON 0.00001f
 
 
 // tuples.c
@@ -35,7 +35,7 @@ float	dot(tuple a, tuple b);
 tuple	cross(tuple a, tuple b);
 
 bool	equal(float a, float b);
-bool	compare_tuple(tuple a, tuple b);
+bool	equal_tuple(tuple a, tuple b);
 void	print_tuple(tuple t);
 
 // drawing.c
@@ -54,6 +54,38 @@ void	write_pixel(canvas* c, int x, int y, tuple col);
 tuple	color(float r, float g, float b);
 void	canvas_to_ppm(canvas* c, const char* filename);
 int		to_ppm_component(float value);
+
+
+// matrix.c
+
+#define MAX_MATRIX 4
+
+typedef struct
+{
+	int		size;
+	float	data[MAX_MATRIX][MAX_MATRIX];
+}	matrix;
+
+void print_matrix(matrix m);
+tuple matrix_multiply_tuple(matrix m, tuple t);
+matrix matrix_multiply(matrix a, matrix b);
+int matrix_equal(matrix a, matrix b);
+matrix matrix_zero(int size);
+matrix matrix_identity(int size);
+matrix matrix_transpose(matrix m);
+matrix inverse(matrix m);
+float minor(matrix m, int row, int col);
+int is_invertible(matrix m);
+float cofactor(matrix m, int row, int col);
+matrix submatrix(matrix m, int row, int col);
+float determinant_2x2(matrix m);
+float determinant(matrix m);
+
+matrix translation(float tx, float ty, float tz);
+matrix scaling(float sx, float sy, float sz);
+matrix rotation_x(float angle);
+matrix rotation_y(float angle);
+matrix rotation_z(float angle);
 
 
 

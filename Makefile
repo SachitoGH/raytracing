@@ -1,8 +1,9 @@
 NAME        = raytracing
 
-SRC         = test1.c \
+SRC         = clock_test.c \
 			  tuples.c \
-			  drawing.c
+			  drawing.c \
+			  matrix.c
 
 OBJ         = $(SRC:.c=.o)
 
