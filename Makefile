@@ -1,13 +1,14 @@
 NAME        = raytracing
 
-SRC         = clock_test.c \
-			  tuples.c \
-			  drawing.c \
-			  matrix.c
+SRC         = src/main.c \
+			  src/tuples.c \
+			  src/drawing.c \
+			  src/matrix.c	\
+			  src/ray.c
 
 OBJ         = $(SRC:.c=.o)
 
-INC         = 
+INC         = -I./inc/
 
 CXX         = gcc
 CXXFLAGS    = -Wall -Wextra -Werror

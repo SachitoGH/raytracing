@@ -10,7 +10,6 @@
 
 
 // tuples.c
-
 typedef	struct
 {
 	float	x;
@@ -39,7 +38,6 @@ bool	equal_tuple(tuple a, tuple b);
 void	print_tuple(tuple t);
 
 // drawing.c
-
 typedef	struct
 {
 	int		width;
@@ -57,7 +55,6 @@ int		to_ppm_component(float value);
 
 
 // matrix.c
-
 #define MAX_MATRIX 4
 
 typedef struct
@@ -81,12 +78,22 @@ matrix submatrix(matrix m, int row, int col);
 float determinant_2x2(matrix m);
 float determinant(matrix m);
 
+
+//transformation
 matrix translation(float tx, float ty, float tz);
 matrix scaling(float sx, float sy, float sz);
 matrix rotation_x(float angle);
 matrix rotation_y(float angle);
 matrix rotation_z(float angle);
 
+//raytracing.h
+typedef struct
+{
+	tuple	origin;
+	tuple	direction;
+}	ray;
 
+ray	create_ray(tuple origin, tuple direction);
+tuple	position(ray r, float t);
 
 #endif

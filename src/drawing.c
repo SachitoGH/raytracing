@@ -11,7 +11,6 @@ canvas create_canvas(int width, int height)
     for (int i = 0; i < width * height; ++i) {
         c.pixels[i] = vector(0.0f, 0.0f, 0.0f);
     }
-
     return c;
 }
 
