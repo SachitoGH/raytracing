@@ -93,7 +93,39 @@ typedef struct
 	tuple	direction;
 }	ray;
 
-ray	create_ray(tuple origin, tuple direction);
-tuple	position(ray r, float t);
+typedef	struct
+{
+	int		id;
+	matrix	transform;
+}	sphere;
+
+
+typedef struct 
+{
+	float	t;
+	sphere	object;
+}	intersection;
+
+#define MAX_INTERSECTIONS 10
+
+typedef struct 
+{
+	intersection	list[MAX_INTERSECTIONS];
+	int				count;
+}	intersections;
+
+
+
+
+ray				create_ray(tuple origin, tuple direction);
+tuple			position(ray r, float t);
+sphere			create_sphere(void);
+intersections	intersect(sphere s, ray r);
+intersection	create_intersection(float t, sphere object);
+intersections	make_intersections(intersection i1, intersection i2);
+intersection*	hit(intersections* xs);
+ray				transform(ray r, matrix m);
+void	set_transform(sphere *s, matrix t);
+
 
 #endif

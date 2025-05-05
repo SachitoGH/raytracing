@@ -1,6 +1,6 @@
 NAME        = raytracing
 
-SRC         = src/main.c \
+SRC         = test/silhouette.c \
 			  src/tuples.c \
 			  src/drawing.c \
 			  src/matrix.c	\

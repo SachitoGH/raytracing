@@ -60,7 +60,7 @@ tuple	mult_tuple(tuple a, tuple b)
 
 float	magnitude(tuple p)
 {
-	return (sqrt(pow(p.x, 2) + pow(p.y, 2) + pow(p.z, 2) + pow(p.w, 2)));
+	return (sqrt(p.x * p.x + p.y * p.y + p.z * p.z + p.w * p.w));
 }
 
 tuple	normalize(tuple p)
