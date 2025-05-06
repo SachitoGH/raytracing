@@ -1,46 +1,61 @@
-#include "raytracing.h"
 
-#include <assert.h>
+#include <stdio.h>
+#include <math.h>
+#include "raytracing.h"  // adjust this if your header file is named differently
 
-
-void test_intersect_scaled_sphere(void)
+void    test_lighting_with_light_behind_surface(void)
 {
-    ray r = create_ray(point(0, 0, -5), vector(0, 0, 1));
-    sphere s = create_sphere();
+    material m = create_material();
+    tuple position = point(0, 0, 0);
+    tuple eyev = vector(0, 0, -1);
+    tuple normalv = vector(0, 0, -1);
+    light l = point_light(point(0, 0, 10), color(1, 1, 1));
 
-    // Apply scaling transformation (scaling by 2 in all axes)
-    matrix m = scaling(2, 2, 2);
-    set_transform(&s, m);  // Assuming set_transform function exists and updates sphere's transformation
-
-    intersections xs = intersect(s, r);
-
-    // Assert the intersection results
-    assert(xs.count == 2);
-    assert(fabs(xs.list[0].t - 3.0) < 0.0001);  // Using epsilon for floating-point comparison
-    assert(fabs(xs.list[1].t - 7.0) < 0.0001);
+    tuple result = lighting(m, l, position, eyev, normalv);
+    tuple expected = color(0.1, 0.1, 0.1);
+    if (!equal_tuple(result, expected))
+        printf("FAIL: light behind surface, got (%.4f %.4f %.4f)\n", result.x, result.y, result.z);
+    else
+        printf("PASS: light behind surface\n");
 }
 
-void test_intersect_translated_sphere(void)
+void    test_lighting_with_eye_in_reflection_vector(void)
 {
-    ray r = create_ray(point(0, 0, -5), vector(0, 0, 1));
-    sphere s = create_sphere();
+    material m = create_material();
+    tuple position = point(0, 0, 0);
+    tuple eyev = vector(0, -sqrtf(2)/2, -sqrtf(2)/2);
+    tuple normalv = vector(0, 0, -1);
+    light l = point_light(point(0, 10, -10), color(1, 1, 1));
 
-    // Apply translation transformation (move sphere by (5, 0, 0))
-    matrix m = translation(5, 0, 0);
-    set_transform(&s, m);  // Assuming set_transform function exists and updates sphere's transformation
-
-    intersections xs = intersect(s, r);
-
-    // Assert the intersection results
-    assert(xs.count == 0);
+    tuple result = lighting(m, l, position, eyev, normalv);
+    tuple expected = color(1.6364, 1.6364, 1.6364);
+    if (!equal_tuple(result, expected))
+        printf("FAIL: eye in reflection vector, got (%.4f %.4f %.4f)\n", result.x, result.y, result.z);
+    else
+        printf("PASS: eye in reflection vector\n");
 }
 
-int main(void)
+void    test_lighting_with_eye_opposite_surface_and_light_offset(void)
 {
-    // Run the tests
-    test_intersect_scaled_sphere();
-    test_intersect_translated_sphere();
+    material m = create_material();
+    tuple position = point(0, 0, 0);
+    tuple eyev = vector(0, 0, -1);
+    tuple normalv = vector(0, 0, -1);
+    light l = point_light(point(0, 10, -10), color(1, 1, 1));
 
-    printf("All tests passed successfully!\n");
-    return 0;
+    tuple result = lighting(m, l, position, eyev, normalv);
+    tuple expected = color(0.7364, 0.7364, 0.7364);
+    if (!equal_tuple(result, expected))
+        printf("FAIL: eye opposite, light 45°, got (%.4f %.4f %.4f)\n", result.x, result.y, result.z);
+    else
+        printf("PASS: eye opposite, light 45°\n");
+}
+
+
+int	main(void)
+{
+	test_lighting_with_eye_opposite_surface_and_light_offset();
+	test_lighting_with_eye_in_reflection_vector();
+	test_lighting_with_light_behind_surface();
+	return (0);
 }

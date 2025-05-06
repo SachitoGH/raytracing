@@ -7,6 +7,7 @@ sphere	create_sphere(void)
 
 	s.id = id++;
 	s.transform = matrix_identity(4);
+	s.material = create_material();
 	return (s);
 }
 
@@ -89,4 +90,59 @@ ray	transform(ray r, matrix m)
 void	set_transform(sphere *s, matrix t)
 {
 	s->transform = t;
+}
+
+tuple	normal_at(sphere s, tuple world_point)
+{
+	matrix	inv = inverse(s.transform);
+	tuple	object_point = matrix_multiply_tuple(inv, world_point);
+	tuple	object_normal = sub_tuple(object_point, point(0, 0, 0));
+	tuple	world_normal = matrix_multiply_tuple(matrix_transpose(inv), object_normal);
+	world_normal.w = 0;
+	return (normalize(world_normal));
+}
+
+tuple	reflect(tuple in, tuple normal)
+{
+	return (sub_tuple(in, mult_tuple_scalar(mult_tuple_scalar(normal, 2), dot(in, normal))));
+}
+
+light	point_light(tuple position, tuple intensity)
+{
+	return ((light){position, intensity});
+}
+
+material	create_material(void)
+{
+	material	m;
+	m.color = color(1, 1, 1);
+	m.ambient = 0.1;
+	m.diffuse = 0.9;
+	m.specular = 0.9;
+	m.shininess = 200.0;
+	return (m);
+}
+
+tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv)
+{
+	tuple	diffuse;
+	tuple	specular;
+	tuple	effective_color = mult_tuple(m.color, l.intensity);
+	tuple	lightv = normalize(sub_tuple(l.position, p));
+	tuple	ambient = mult_tuple_scalar(effective_color, m.ambient);
+	float	light_dot_normal = dot(lightv, normalv);
+
+	if (light_dot_normal < 0)
+		return (ambient);
+	diffuse = mult_tuple_scalar(effective_color, m.diffuse * light_dot_normal);
+	tuple	reflectv = reflect(negate_tuple(lightv), normalv);
+	float	reflect_dot_eye = dot(reflectv, eyev);
+	if (reflect_dot_eye <= 0)
+		specular = color(0, 0, 0);
+	else
+	{
+		float factor = pow(reflect_dot_eye, m.shininess);
+		specular = mult_tuple_scalar(mult_tuple_scalar(l.intensity, m.specular), factor);
+	}
+	return (add_tuple(add_tuple(ambient, diffuse), specular));
 }

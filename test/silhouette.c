@@ -12,6 +12,7 @@ int main(void)
     canvas c = create_canvas(canvas_pixels, canvas_pixels);
     tuple red = color(1, 0, 0);
     sphere s = create_sphere();
+	s.transform = scaling(1, 0.5, 1);
 
     for (int y = 0; y < canvas_pixels; y++)  // Corrected to go through all pixels
     {
@@ -27,5 +28,5 @@ int main(void)
         }
     }
     
-    canvas_to_ppm(&c, "test.ppm");  // Corrected to pass by value
+    canvas_to_ppm(&c, "chapter5.ppm");  // Corrected to pass by value
 }

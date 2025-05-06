@@ -87,6 +87,22 @@ matrix rotation_y(float angle);
 matrix rotation_z(float angle);
 
 //raytracing.h
+
+typedef struct
+{
+	tuple	position;
+	tuple	intensity;
+}	light;
+
+typedef struct
+{
+	tuple	color;
+	float	ambient;
+	float	diffuse;
+	float	specular;
+	float	shininess;
+}	material;
+
 typedef struct
 {
 	tuple	origin;
@@ -95,8 +111,9 @@ typedef struct
 
 typedef	struct
 {
-	int		id;
-	matrix	transform;
+	int			id;
+	matrix		transform;
+	material	material;
 }	sphere;
 
 
@@ -115,8 +132,6 @@ typedef struct
 }	intersections;
 
 
-
-
 ray				create_ray(tuple origin, tuple direction);
 tuple			position(ray r, float t);
 sphere			create_sphere(void);
@@ -126,6 +141,24 @@ intersections	make_intersections(intersection i1, intersection i2);
 intersection*	hit(intersections* xs);
 ray				transform(ray r, matrix m);
 void	set_transform(sphere *s, matrix t);
+tuple	normal_at(sphere s, tuple p);
+tuple	reflect(tuple in, tuple normal);
 
+
+light		point_light(tuple position, tuple intensity);
+material	create_material(void);
+tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv);
+
+// scene.c
+
+typedef struct
+{	
+	sphere	*objects;
+	light	light_source;
+	int		object_count;
+}	world;
+
+world default_world(void);
+intersections intersect_world(world w, ray r);
 
 #endif
