@@ -1,10 +1,11 @@
 NAME        = raytracing
 
-SRC         = test/3dsphere.c \
+SRC         = src/main.c \
 			  src/tuples.c \
 			  src/drawing.c \
 			  src/matrix.c	\
-			  src/ray.c
+			  src/ray.c \
+			  src/scene.c
 
 OBJ         = $(SRC:.c=.o)
 

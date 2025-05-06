@@ -1,11 +1,11 @@
 #include "raytracing.h"
 
-world	create_world();
-{
-	world w;
+// world	create_world()
+// {
+// 	world w;
 
-	return (w);
-}
+// 	return (w);
+// }
 
 world default_world(void)
 {
@@ -31,6 +31,23 @@ world default_world(void)
     return w;
 }
 
+void sort_intersections(intersections *xs)
+{
+    for (int i = 0; i < xs->count - 1; i++)
+    {
+        for (int j = 0; j < xs->count - i - 1; j++)
+        {
+            if (xs->list[j].t > xs->list[j + 1].t)
+            {
+                // Swap the intersections
+                intersection temp = xs->list[j];
+                xs->list[j] = xs->list[j + 1];
+                xs->list[j + 1] = temp;
+            }
+        }
+    }
+}
+
 intersections intersect_world(world w, ray r)
 {
     intersections xs;
@@ -45,5 +62,9 @@ intersections intersect_world(world w, ray r)
             xs.list[xs.count++] = temp.list[j];
         }
     }
+
+    // Sort the intersections by their 't' value
+    sort_intersections(&xs);
+
     return xs;
 }
