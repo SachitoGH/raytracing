@@ -158,7 +158,37 @@ typedef struct
 	int		object_count;
 }	world;
 
+typedef struct s_computation
+{
+	float	t;
+	sphere	object;     // the intersected object
+	tuple	point;      // the point of intersection
+	tuple	eyev;       // the eye (view) vector
+	tuple	normalv;    // the normal vector at the point
+	bool	inside;     // true if the intersection occurs inside the object
+}	computation;
+
 world default_world(void);
 intersections intersect_world(world w, ray r);
+computation	prepare_computations(intersection i, ray r);
+tuple		shade_hit(world w, computation c);
+tuple	color_at(world w, ray r);
+matrix view_transform(tuple from, tuple to, tuple up);
+
+typedef	struct
+{
+	int hsize;
+	int vsize;
+	float fov;
+	matrix transform;
+	float pixel_size;
+	float half_width;
+	float half_height;
+}	camera;
+
+camera	create_camera(int hsize, int vsize, float fov);
+ray ray_for_pixel(camera cam, int px, int py);
+canvas render(camera cam, world w);
+
 
 #endif

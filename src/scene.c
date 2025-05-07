@@ -68,3 +68,126 @@ intersections intersect_world(world w, ray r)
 
     return xs;
 }
+
+computation	prepare_computations(intersection i, ray r)
+{
+	computation comps;
+
+	comps.t = i.t;
+	comps.object = i.object;
+	comps.point = position(r, comps.t);
+	comps.eyev = negate_tuple(r.direction);
+	comps.normalv = normal_at(comps.object, comps.point);
+
+	if (dot(comps.normalv, comps.eyev) < 0)
+	{
+		comps.inside = true;
+		comps.normalv = negate_tuple(comps.normalv);
+	}
+	else
+	{
+		comps.inside = false;
+	}
+	return (comps);
+}
+
+tuple		shade_hit(world w, computation c)
+{
+	return (lighting(c.object.material, w.light_source, c.point, c.eyev, c.normalv));
+}
+
+tuple	color_at(world w, ray r)
+{
+	intersections	xs = intersect_world(w, r);
+	intersection	*i = hit(&xs);
+	if (!i)
+		return (color(0, 0, 0));
+	computation		c = prepare_computations(*i, r);
+	return (shade_hit(w, c));
+}
+
+matrix view_transform(tuple from, tuple to, tuple up)
+{
+	tuple forward = normalize(sub_tuple(to, from));
+	tuple upn = normalize(up);
+	tuple left = cross(forward, upn);
+	tuple true_up = cross(left, forward);
+
+	matrix orientation = matrix_identity(4);
+	orientation.data[0][0] = left.x;
+	orientation.data[0][1] = left.y;
+	orientation.data[0][2] = left.z;
+
+	orientation.data[1][0] = true_up.x;
+	orientation.data[1][1] = true_up.y;
+	orientation.data[1][2] = true_up.z;
+
+	orientation.data[2][0] = -forward.x;
+	orientation.data[2][1] = -forward.y;
+	orientation.data[2][2] = -forward.z;
+
+	matrix translation_matrix = translation(-from.x, -from.y, -from.z);
+	return (matrix_multiply(orientation, translation_matrix));
+}
+
+
+camera	create_camera(int hsize, int vsize, float fov)
+{
+	camera cam;
+	cam.hsize = hsize;
+	cam.vsize = vsize;
+	cam.fov = fov;
+	cam.transform = matrix_identity(4);
+
+	float half_view = tanf(fov / 2);
+	float aspect = (float)hsize / (float)vsize;
+
+	if (aspect >= 1)
+	{
+		cam.half_width = half_view;
+		cam.half_height = half_view / aspect;
+	}
+	else
+	{
+		cam.half_width = half_view * aspect;
+		cam.half_height = half_view;
+	}
+	cam.pixel_size = (cam.half_width * 2) / hsize;
+
+	return (cam);
+}
+
+ray ray_for_pixel(camera cam, int px, int py)
+{
+    // Offset from the edge of the canvas to the pixel center
+    float xoffset = (px + 0.5f) * cam.pixel_size;
+    float yoffset = (py + 0.5f) * cam.pixel_size;
+
+    // Untransformed coordinates of the pixel in world space
+    float world_x = cam.half_width - xoffset;
+    float world_y = cam.half_height - yoffset;
+
+    // Using the camera matrix, transform the canvas point and the origin
+    matrix inv = inverse(cam.transform);
+    tuple pixel = matrix_multiply_tuple(inv, point(world_x, world_y, -1));
+    tuple origin = matrix_multiply_tuple(inv, point(0, 0, 0));
+    tuple direction = normalize(sub_tuple(pixel, origin));
+
+    return create_ray(origin, direction);
+}
+
+canvas render(camera cam, world w)
+{
+	canvas image = create_canvas(cam.hsize, cam.vsize);
+
+	for (int y = 0; y < cam.vsize; y++)
+	{
+		for (int x = 0; x < cam.hsize; x++)
+		{
+			ray r = ray_for_pixel(cam, x, y);
+			tuple color_at_pixel = color_at(w, r);
+			write_pixel(&image, x, y, color_at_pixel);
+		}
+	}
+	return image;
+}

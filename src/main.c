@@ -3,36 +3,34 @@
 #include <math.h>
 #include "raytracing.h"  // adjust this if your header file is named differently
 
-void test_intersect_world_with_ray(void)
-{
-    world w = default_world();
-    ray r = create_ray(point(0, 0, -5), vector(0, 0, 1));
-
-    intersections xs = intersect_world(w, r);
-
-    // Check if there are 4 intersections
-    if (xs.count != 4)
-        printf("FAIL: Expected 4 intersections, got %d\n", xs.count);
-    else
-    {
-        // Check t values of the intersections
-        if (!equal(xs.list[0].t, 4.0))
-            printf("FAIL: Expected t=4, got t=%.4f\n", xs.list[0].t);
-        if (!equal(xs.list[1].t, 4.5))
-            printf("FAIL: Expected t=4.5, got t=%.4f\n", xs.list[1].t);
-        if (!equal(xs.list[2].t, 5.5))
-            printf("FAIL: Expected t=5.5, got t=%.4f\n", xs.list[2].t);
-        if (!equal(xs.list[3].t, 6.0))
-            printf("FAIL: Expected t=6, got t=%.4f\n", xs.list[3].t);
-    }
-
-    printf("PASS: Intersected world with ray\n");
-}
-
-
 
 int	main(void)
 {
-	test_intersect_world_with_ray();
+	// Create the default world with two spheres and a light
+	world w = default_world();
+
+	// Create a camera
+	int width = 500;
+	int height = 500;
+	float fov = 90; // degrees
+	camera cam = create_camera(width, height, fov);
+
+	// Point the camera from z = -5 towards the origin, using up = +y
+	tuple from = point(0, 1.5, -2);
+	tuple to = point(0, 0, 0);
+	tuple up = vector(0, 1, 0);
+	cam.transform = view_transform(from, to, up);
+
+	// Render the scene to a canvas
+	canvas image = render(cam, w);
+
+	// Write it to a PPM file
+	canvas_to_ppm(&image, "scene.ppm");
+
+	// Free the canvas memory
+	destroy_canvas(&image);
+
+	printf("PPM image saved as 'scene.ppm'\n");
 	return (0);
 }
+
