@@ -136,10 +136,10 @@ camera	create_camera(int hsize, int vsize, float fov)
 	camera cam;
 	cam.hsize = hsize;
 	cam.vsize = vsize;
-	cam.fov = fov;
+	cam.fov = fov * (M_PI / 180.0f); //convert to rad
 	cam.transform = matrix_identity(4);
 
-	float half_view = tanf(fov / 2);
+	float half_view = tanf(cam.fov / 2);
 	float aspect = (float)hsize / (float)vsize;
 
 	if (aspect >= 1)

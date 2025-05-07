@@ -12,11 +12,11 @@ int	main(void)
 	// Create a camera
 	int width = 500;
 	int height = 500;
-	float fov = 90; // degrees
+	float fov = 40; // degrees
 	camera cam = create_camera(width, height, fov);
 
 	// Point the camera from z = -5 towards the origin, using up = +y
-	tuple from = point(0, 1.5, -2);
+	tuple from = point(0, 0, -5);
 	tuple to = point(0, 0, 0);
 	tuple up = vector(0, 1, 0);
 	cam.transform = view_transform(from, to, up);
