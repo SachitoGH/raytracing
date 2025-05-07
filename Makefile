@@ -19,7 +19,7 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@echo "Linking..."
-	@$(CXX) $(CXXFLAGS) -o $@ $^ -lm
+	@$(CXX) $(CXXFLAGS) -o $@ $^ -lm -lSDL2
 	@echo "Executable created!"
 
 %.o: %.c

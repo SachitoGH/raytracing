@@ -49,7 +49,7 @@ intersections intersect(sphere s, ray r)
     float c = dot(sphere_to_ray, sphere_to_ray) - 1;
 
     float discriminant = b * b - 4 * a * c;
-    if (discriminant < 0)
+    if (discriminant < EPSILON)
         return (result);
 
     float sqrt_disc = sqrtf(discriminant);
@@ -69,7 +69,7 @@ intersection* hit(intersections* xs)
 	intersection* hit = NULL;
 	for (int i = 0; i < xs->count; ++i)
 	{
-		if (xs->list[i].t >= 0)
+		if (xs->list[i].t > EPSILON)
 		{
 			if (hit == NULL || xs->list[i].t < hit->t)
 			{
@@ -132,12 +132,12 @@ tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv, bool in_
 	tuple	ambient = mult_tuple_scalar(effective_color, m.ambient);
 	float	light_dot_normal = dot(lightv, normalv);
 
-	if (light_dot_normal < 0 || in_shadow)
+	if (light_dot_normal < EPSILON || in_shadow)
 		return (ambient);
 	diffuse = mult_tuple_scalar(effective_color, m.diffuse * light_dot_normal);
 	tuple	reflectv = reflect(negate_tuple(lightv), normalv);
 	float	reflect_dot_eye = dot(reflectv, eyev);
-	if (reflect_dot_eye <= 0)
+	if (reflect_dot_eye <= EPSILON)
 		specular = color(0, 0, 0);
 	else
 	{

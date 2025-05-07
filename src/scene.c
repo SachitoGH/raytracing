@@ -80,7 +80,7 @@ computation	prepare_computations(intersection i, ray r)
 	comps.eyev = negate_tuple(r.direction);
 	comps.normalv = normal_at(comps.object, comps.point);
 
-	if (dot(comps.normalv, comps.eyev) < 0)
+	if (dot(comps.normalv, comps.eyev) < EPSILON)
 	{
 		comps.inside = true;
 		comps.normalv = negate_tuple(comps.normalv);
@@ -89,14 +89,20 @@ computation	prepare_computations(intersection i, ray r)
 	{
 		comps.inside = false;
 	}
+
+	// Avoid shadow acne by pushing the point slightly above the surface
+	tuple offset = mult_tuple_scalar(comps.normalv, 0.01f);
+	comps.over_point = add_tuple(comps.point, offset);
+
 	return (comps);
 }
+
 
 tuple		shade_hit(world w, computation c)
 {
 	tuple	res = color(0, 0, 0);
 	for (int i = 0; i < w.light_count; i++)
-		res = add_tuple(res, lighting(c.object.material, w.lights[i], c.point, c.eyev, c.normalv, is_shadowed(w, c.point, w.lights[i])));
+		res = add_tuple(res, lighting(c.object.material, w.lights[i], c.point, c.eyev, c.normalv, is_shadowed(w, c.over_point, w.lights[i])));
 	return (res);
 }
 

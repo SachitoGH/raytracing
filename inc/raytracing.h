@@ -52,6 +52,7 @@ void	write_pixel(canvas* c, int x, int y, tuple col);
 tuple	color(float r, float g, float b);
 void	canvas_to_ppm(canvas* c, const char* filename);
 int		to_ppm_component(float value);
+canvas	upscale_canvas(canvas *src, int scale_x, int scale_y);
 
 
 // matrix.c
@@ -166,6 +167,7 @@ typedef struct s_computation
 	tuple	point;      // the point of intersection
 	tuple	eyev;       // the eye (view) vector
 	tuple	normalv;    // the normal vector at the point
+	tuple	over_point;
 	bool	inside;     // true if the intersection occurs inside the object
 }	computation;
 

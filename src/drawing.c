@@ -82,3 +82,19 @@ void canvas_to_ppm(canvas* c, const char* filename)
     }
     fclose(f);
 }
+
+canvas	upscale_canvas(canvas *src, int scale_x, int scale_y)
+{
+	canvas dest = create_canvas(src->width * scale_x, src->height * scale_y);
+	for (int y = 0; y < dest.height; y++)
+	{
+		for (int x = 0; x < dest.width; x++)
+		{
+			int src_x = x / scale_x;
+			int src_y = y / scale_y;
+			tuple color = pixel_at(src, src_x, src_y);
+			write_pixel(&dest, x, y, color);
+		}
+	}
+	return (dest);
+}
