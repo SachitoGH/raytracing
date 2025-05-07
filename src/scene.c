@@ -12,7 +12,9 @@ world default_world(void)
     world w;
     
     // Create a light source
-    w.light_source = point_light(point(-10, 10, -10), color(1, 1, 1));
+    w.light_count = 1;
+	w.lights = malloc(sizeof(light) * w.light_count);
+	w.lights[0] = point_light(point(-10, 10, -10), color(1, 1, 1));
     
     // Allocate memory for 2 spheres
     w.object_count = 2;
@@ -99,7 +101,10 @@ computation	prepare_computations(intersection i, ray r)
 
 tuple		shade_hit(world w, computation c)
 {
-	return (lighting(c.object.material, w.light_source, c.point, c.eyev, c.normalv));
+	tuple	res = color(0, 0, 0);
+	for (int i = 0; i < w.light_count; i++)
+		res = add_tuple(res, lighting(c.object.material, w.lights[i], c.point, c.eyev, c.normalv));
+	return (res);
 }
 
 tuple	color_at(world w, ray r)

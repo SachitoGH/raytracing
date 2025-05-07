@@ -6,7 +6,10 @@ int main(void)
 	world w;
 	w.object_count = 6;
 	w.objects = malloc(sizeof(sphere) * w.object_count);
-	w.light_source = point_light(point(-10, 10, -10), color(1, 1, 1));
+	w.light_count = 1;
+	w.lights = malloc(sizeof(light)* w.light_count);
+	w.lights[0] = point_light(point(-10, 10, -10), color(1, 1, 1));
+	// w.lights[1] = point_light(point(10, 10, 10), color(1, 0, 0));
 
 	// Floor
 	sphere floor = create_sphere();

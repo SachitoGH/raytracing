@@ -123,7 +123,7 @@ typedef struct
 	sphere	object;
 }	intersection;
 
-#define MAX_INTERSECTIONS 10
+#define MAX_INTERSECTIONS 100
 
 typedef struct 
 {
@@ -154,8 +154,9 @@ tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv);
 typedef struct
 {	
 	sphere	*objects;
-	light	light_source;
+	light	*lights;
 	int		object_count;
+	int		light_count;
 }	world;
 
 typedef struct s_computation
