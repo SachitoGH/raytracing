@@ -2,8 +2,10 @@
 
 int main(void)
 {
+	int	i = 0;
 	world w;
-	w.object_count = 0;
+	w.object_count = 6;
+	w.objects = malloc(sizeof(sphere) * w.object_count);
 	w.light_source = point_light(point(-10, 10, -10), color(1, 1, 1));
 
 	// Floor
@@ -12,7 +14,7 @@ int main(void)
 	floor.material = create_material();
 	floor.material.color = color(1, 0.9, 0.9);
 	floor.material.specular = 0;
-	w.objects[w.object_count++] = floor;
+	w.objects[i++] = floor;
 
 	// Left wall
 	sphere left_wall = create_sphere();
@@ -27,7 +29,7 @@ int main(void)
 		scaling(10, 0.01, 10)
 	);
 	left_wall.material = floor.material;
-	w.objects[w.object_count++] = left_wall;
+	w.objects[i++] = left_wall;
 
 	// Right wall
 	sphere right_wall = create_sphere();
@@ -42,7 +44,7 @@ int main(void)
 		scaling(10, 0.01, 10)
 	);
 	right_wall.material = floor.material;
-	w.objects[w.object_count++] = right_wall;
+	w.objects[i++] = right_wall;
 
 	// Middle sphere
 	sphere middle = create_sphere();
@@ -51,7 +53,7 @@ int main(void)
 	middle.material.color = color(0.1, 1, 0.5);
 	middle.material.diffuse = 0.7;
 	middle.material.specular = 0.3;
-	w.objects[w.object_count++] = middle;
+	w.objects[i++] = middle;
 
 	// Right sphere
 	sphere right = create_sphere();
@@ -63,7 +65,7 @@ int main(void)
 	right.material.color = color(0.5, 1, 0.1);
 	right.material.diffuse = 0.7;
 	right.material.specular = 0.3;
-	w.objects[w.object_count++] = right;
+	w.objects[i++] = right;
 
 	// Left sphere
 	sphere left = create_sphere();
@@ -75,7 +77,7 @@ int main(void)
 	left.material.color = color(1, 0.8, 0.1);
 	left.material.diffuse = 0.7;
 	left.material.specular = 0.3;
-	w.objects[w.object_count++] = left;
+	w.objects[i++] = left;
 
 	// Camera
 	camera cam = create_camera(1000, 500, 60); // π/3 radians = 60 degrees
@@ -85,5 +87,6 @@ int main(void)
 	canvas image = render(cam, w);
 	canvas_to_ppm(&image, "scene.ppm");
 	destroy_canvas(&image);
+	destroy_world(&w);
 	return (0);
 }

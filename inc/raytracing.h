@@ -169,6 +169,7 @@ typedef struct s_computation
 }	computation;
 
 world default_world(void);
+void	destroy_world(world *w);
 intersections intersect_world(world w, ray r);
 computation	prepare_computations(intersection i, ray r);
 tuple		shade_hit(world w, computation c);

@@ -31,6 +31,12 @@ world default_world(void)
     return w;
 }
 
+void	destroy_world(world *w)
+{
+	free(w->objects);
+	w->objects = NULL;
+}
+
 void sort_intersections(intersections *xs)
 {
     for (int i = 0; i < xs->count - 1; i++)
