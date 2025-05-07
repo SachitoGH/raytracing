@@ -1,12 +1,5 @@
 #include "raytracing.h"
 
-// world	create_world()
-// {
-// 	world w;
-
-// 	return (w);
-// }
-
 world default_world(void)
 {
     world w;
@@ -103,7 +96,7 @@ tuple		shade_hit(world w, computation c)
 {
 	tuple	res = color(0, 0, 0);
 	for (int i = 0; i < w.light_count; i++)
-		res = add_tuple(res, lighting(c.object.material, w.lights[i], c.point, c.eyev, c.normalv));
+		res = add_tuple(res, lighting(c.object.material, w.lights[i], c.point, c.eyev, c.normalv, is_shadowed(w, c.point, w.lights[i])));
 	return (res);
 }
 

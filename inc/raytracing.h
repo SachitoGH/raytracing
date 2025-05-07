@@ -147,7 +147,7 @@ tuple	reflect(tuple in, tuple normal);
 
 light		point_light(tuple position, tuple intensity);
 material	create_material(void);
-tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv);
+tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv, bool in_shadow);
 
 // scene.c
 
@@ -191,6 +191,9 @@ typedef	struct
 camera	create_camera(int hsize, int vsize, float fov);
 ray ray_for_pixel(camera cam, int px, int py);
 canvas render(camera cam, world w);
+
+//shadow.c
+bool is_shadowed(world w, tuple p, light l);
 
 
 #endif

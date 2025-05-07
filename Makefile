@@ -1,11 +1,12 @@
 NAME        = raytracing
 
-SRC         = challenge/firstscene.c \
+SRC         = src/main.c \
 			  src/tuples.c \
 			  src/drawing.c \
 			  src/matrix.c	\
 			  src/ray.c \
-			  src/scene.c
+			  src/scene.c \
+			  src/shadow.c
 
 OBJ         = $(SRC:.c=.o)
 

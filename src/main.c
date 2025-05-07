@@ -4,34 +4,31 @@
 #include "raytracing.h"  // adjust this if your header file is named differently
 
 
-int	main(void)
+int main(void)
 {
-	// Create the default world with two spheres and a light
-	world w = default_world();
-	w.objects[1].transform = translation(2, 0, 0);
+    world w = default_world(); // Assume this world has multiple lights
 
-	// Create a camera
-	int width = 500;
-	int height = 500;
-	float fov = 60; // degrees
-	camera cam = create_camera(width, height, fov);
+	// Scenario 1: No shadow when an object is behind the light
+	tuple p1 = point(-20, 20, -20);  // The point behind the light
+	if (is_shadowed(w, p1, w.lights[0]))
+	{
+		printf("The point is in shadow.\n");
+	}
+	else
+	{
+		printf("The point is not in shadow.\n");
+	}
 
-	// Point the camera from z = -5 towards the origin, using up = +y
-	tuple from = point(0, 0, -5);
-	tuple to = point(2, 0, 0);
-	tuple up = vector(0, 1, 0);
-	cam.transform = view_transform(from, to, up);
+	// Scenario 2: No shadow when an object is behind the point
+	tuple p2 = point(-2, 2, -2);  // The point with an object behind it
+	if (is_shadowed(w, p2, w.lights[0]))
+	{
+		printf("The point is in shadow.\n");
+	}
+	else
+	{
+		printf("The point is not in shadow.\n");
+	}
 
-	// Render the scene to a canvas
-	canvas image = render(cam, w);
-
-	// Write it to a PPM file
-	canvas_to_ppm(&image, "scene.ppm");
-
-	// Free the canvas memory
-	destroy_canvas(&image);
-
-	printf("PPM image saved as 'scene.ppm'\n");
-	return (0);
+    return 0;
 }
-

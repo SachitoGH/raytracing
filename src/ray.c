@@ -123,7 +123,7 @@ material	create_material(void)
 	return (m);
 }
 
-tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv)
+tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv, bool in_shadow)
 {
 	tuple	diffuse;
 	tuple	specular;
@@ -132,7 +132,7 @@ tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv)
 	tuple	ambient = mult_tuple_scalar(effective_color, m.ambient);
 	float	light_dot_normal = dot(lightv, normalv);
 
-	if (light_dot_normal < 0)
+	if (light_dot_normal < 0 || in_shadow)
 		return (ambient);
 	diffuse = mult_tuple_scalar(effective_color, m.diffuse * light_dot_normal);
 	tuple	reflectv = reflect(negate_tuple(lightv), normalv);
