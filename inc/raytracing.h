@@ -193,6 +193,7 @@ typedef	struct
 camera	create_camera(int hsize, int vsize, float fov);
 ray ray_for_pixel(camera cam, int px, int py);
 canvas render(camera cam, world w);
+canvas low_render(camera cam, world w, int step);
 
 //shadow.c
 bool is_shadowed(world w, tuple p, light l);

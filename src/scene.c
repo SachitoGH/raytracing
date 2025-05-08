@@ -201,3 +201,29 @@ canvas render(camera cam, world w)
 	}
 	return image;
 }
+
+canvas low_render(camera cam, world w, int step)
+{
+    canvas image = create_canvas(cam.hsize, cam.vsize);
+
+    // Render every 'step'th pixel
+    for (int y = 0; y < cam.vsize; y += step)
+    {
+        for (int x = 0; x < cam.hsize; x += step)
+        {
+            ray r = ray_for_pixel(cam, x, y);
+            tuple color_at_pixel = color_at(w, r);
+
+            // Write the computed color to a block of pixels
+            for (int dy = 0; dy < step && y + dy < cam.vsize; dy++)
+            {
+                for (int dx = 0; dx < step && x + dx < cam.hsize; dx++)
+                {
+                    write_pixel(&image, x + dx, y + dy, color_at_pixel);
+                }
+            }
+        }
+    }
+
+    return image;
+}

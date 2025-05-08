@@ -1,5 +1,6 @@
 #include "raytracing.h"  // Replace with actual headers
 
+
 int main(void)
 {
 	int	i = 0;
@@ -87,10 +88,10 @@ int main(void)
 	cam.transform = view_transform(point(0, 1.5, -5), point(0, 1, 0), vector(0, 1, 0));
 
 	// Render
+	// canvas image = low_render(cam, w, 10);
 	canvas image = render(cam, w);
 	canvas_to_ppm(&image, "scene.ppm");
 	destroy_canvas(&image);
 	destroy_world(&w);
 	return (0);
 }
-
