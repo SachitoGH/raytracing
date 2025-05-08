@@ -6,7 +6,9 @@ SRC         = challenge/firstscene.c \
 			  src/matrix.c	\
 			  src/ray.c \
 			  src/scene.c \
-			  src/shadow.c
+			  src/sphere.c \
+			  src/transformation.c \
+			  src/render.c
 
 OBJ         = $(SRC:.c=.o)
 

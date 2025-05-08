@@ -32,6 +32,11 @@ void	destroy_world(world *w)
 	w->objects = NULL;
 }
 
+light	point_light(tuple position, tuple intensity)
+{
+	return ((light){position, intensity});
+}
+
 void sort_intersections(intersections *xs)
 {
     for (int i = 0; i < xs->count - 1; i++)
@@ -49,11 +54,6 @@ void sort_intersections(intersections *xs)
     }
 }
 
-intersections	intersect(shape *object, ray r)
-{
-	return (sphere_intersect(*object, r));
-}
-
 intersections intersect_world(world w, ray r)
 {
     intersections xs;
@@ -62,7 +62,7 @@ intersections intersect_world(world w, ray r)
     // Intersect the ray with each object in the world
     for (int i = 0; i < w.object_count; i++)
     {
-        intersections temp = intersect(w.objects[i], r);
+        intersections temp = intersect(&w.objects[i], r);
         for (int j = 0; j < temp.count; j++)
         {
             xs.list[xs.count++] = temp.list[j];
@@ -75,50 +75,9 @@ intersections intersect_world(world w, ray r)
     return xs;
 }
 
-computation	prepare_computations(intersection i, ray r)
+intersections	intersect(shape *object, ray r)
 {
-	computation comps;
-
-	comps.t = i.t;
-	comps.object = i.object;
-	comps.point = position(r, comps.t);
-	comps.eyev = negate_tuple(r.direction);
-	comps.normalv = normal_at(comps.object, comps.point);
-
-	if (dot(comps.normalv, comps.eyev) < EPSILON)
-	{
-		comps.inside = true;
-		comps.normalv = negate_tuple(comps.normalv);
-	}
-	else
-	{
-		comps.inside = false;
-	}
-
-	// Avoid shadow acne by pushing the point slightly above the surface
-	tuple offset = mult_tuple_scalar(comps.normalv, 0.01f);
-	comps.over_point = add_tuple(comps.point, offset);
-
-	return (comps);
-}
-
-
-tuple		shade_hit(world w, computation c)
-{
-	tuple	res = color(0, 0, 0);
-	for (int i = 0; i < w.light_count; i++)
-		res = add_tuple(res, lighting(c.object.material, w.lights[i], c.point, c.eyev, c.normalv, is_shadowed(w, c.over_point, w.lights[i])));
-	return (res);
-}
-
-tuple	color_at(world w, ray r)
-{
-	intersections	xs = intersect_world(w, r);
-	intersection	*i = hit(&xs);
-	if (!i)
-		return (color(0, 0, 0));
-	computation		c = prepare_computations(*i, r);
-	return (shade_hit(w, c));
+	return (sphere_intersect(object, r));
 }
 
 matrix view_transform(tuple from, tuple to, tuple up)
@@ -172,63 +131,13 @@ camera	create_camera(int hsize, int vsize, float fov)
 	return (cam);
 }
 
-ray ray_for_pixel(camera cam, int px, int py)
+material	create_material(void)
 {
-    // Offset from the edge of the canvas to the pixel center
-    float xoffset = (px + 0.5f) * cam.pixel_size;
-    float yoffset = (py + 0.5f) * cam.pixel_size;
-
-    // Untransformed coordinates of the pixel in world space
-    float world_x = cam.half_width - xoffset;
-    float world_y = cam.half_height - yoffset;
-
-    // Using the camera matrix, transform the canvas point and the origin
-    matrix inv = inverse(cam.transform);
-    tuple pixel = matrix_multiply_tuple(inv, point(world_x, world_y, -1));
-    tuple origin = matrix_multiply_tuple(inv, point(0, 0, 0));
-    tuple direction = normalize(sub_tuple(pixel, origin));
-
-    return create_ray(origin, direction);
-}
-
-canvas render(camera cam, world w)
-{
-	canvas image = create_canvas(cam.hsize, cam.vsize);
-
-	for (int y = 0; y < cam.vsize; y++)
-	{
-		for (int x = 0; x < cam.hsize; x++)
-		{
-			ray r = ray_for_pixel(cam, x, y);
-			tuple color_at_pixel = color_at(w, r);
-			write_pixel(&image, x, y, color_at_pixel);
-		}
-	}
-	return image;
-}
-
-canvas low_render(camera cam, world w, int step)
-{
-    canvas image = create_canvas(cam.hsize, cam.vsize);
-
-    // Render every 'step'th pixel
-    for (int y = 0; y < cam.vsize; y += step)
-    {
-        for (int x = 0; x < cam.hsize; x += step)
-        {
-            ray r = ray_for_pixel(cam, x, y);
-            tuple color_at_pixel = color_at(w, r);
-
-            // Write the computed color to a block of pixels
-            for (int dy = 0; dy < step && y + dy < cam.vsize; dy++)
-            {
-                for (int dx = 0; dx < step && x + dx < cam.hsize; dx++)
-                {
-                    write_pixel(&image, x + dx, y + dy, color_at_pixel);
-                }
-            }
-        }
-    }
-
-    return image;
+	material	m;
+	m.color = color(1, 1, 1);
+	m.ambient = 0.1;
+	m.diffuse = 0.9;
+	m.specular = 0.9;
+	m.shininess = 200.0;
+	return (m);
 }
