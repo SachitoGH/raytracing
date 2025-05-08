@@ -11,7 +11,7 @@ world default_world(void)
     
     // Allocate memory for 2 spheres
     w.object_count = 2;
-    w.objects = malloc(sizeof(sphere) * w.object_count);
+    w.objects = malloc(sizeof(shape) * w.object_count);
     
     // First sphere: default material and transformation
     w.objects[0] = create_sphere(); // Using the create_sphere function from your previous code
@@ -47,6 +47,11 @@ void sort_intersections(intersections *xs)
             }
         }
     }
+}
+
+intersections	intersect(shape *object, ray r)
+{
+	return (sphere_intersect(*object, r));
 }
 
 intersections intersect_world(world w, ray r)

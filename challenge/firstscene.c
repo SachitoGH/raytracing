@@ -6,14 +6,14 @@ int main(void)
 	int	i = 0;
 	world w;
 	w.object_count = 6;
-	w.objects = malloc(sizeof(sphere) * w.object_count);
+	w.objects = malloc(sizeof(shape) * w.object_count);
 	w.light_count = 1;
 	w.lights = malloc(sizeof(light)* w.light_count);
 	w.lights[0] = point_light(point(-10, 10, -10), color(1, 1, 1));
 	// w.lights[1] = point_light(point(10, 10, 10), color(1, 0, 0));
 
 	// Floor
-	sphere floor = create_sphere();
+	shape floor = create_sphere();
 	floor.transform = scaling(10, 0.01, 10);
 	floor.material = create_material();
 	floor.material.color = color(1, 0.9, 0.9);
@@ -21,7 +21,7 @@ int main(void)
 	w.objects[i++] = floor;
 
 	// Left wall
-	sphere left_wall = create_sphere();
+	shape left_wall = create_sphere();
 	left_wall.transform = matrix_multiply(
 		matrix_multiply(
 			matrix_multiply(
@@ -36,7 +36,7 @@ int main(void)
 	w.objects[i++] = left_wall;
 
 	// Right wall
-	sphere right_wall = create_sphere();
+	shape right_wall = create_sphere();
 	right_wall.transform = matrix_multiply(
 		matrix_multiply(
 			matrix_multiply(
@@ -51,7 +51,7 @@ int main(void)
 	w.objects[i++] = right_wall;
 
 	// Middle sphere
-	sphere middle = create_sphere();
+	shape middle = create_sphere();
 	middle.transform = translation(-0.5, 1, 0.5);
 	middle.material = create_material();
 	middle.material.color = color(0.1, 1, 0.5);
@@ -60,7 +60,7 @@ int main(void)
 	w.objects[i++] = middle;
 
 	// Right sphere
-	sphere right = create_sphere();
+	shape right = create_sphere();
 	right.transform = matrix_multiply(
 		translation(1.5, 0.5, -0.5),
 		scaling(0.5, 0.5, 0.5)
@@ -72,7 +72,7 @@ int main(void)
 	w.objects[i++] = right;
 
 	// Left sphere
-	sphere left = create_sphere();
+	shape left = create_sphere();
 	left.transform = matrix_multiply(
 		translation(-1.5, 0.33, -0.75),
 		scaling(0.33, 0.33, 0.33)

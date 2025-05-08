@@ -110,18 +110,34 @@ typedef struct
 	tuple	direction;
 }	ray;
 
-typedef	struct
+typedef enum {
+	SHAPE_SPHERE,
+	SHAPE_PLANE,
+	// Add more types as needed
+} shape_type;
+
+struct s_intersections;           // forward declare the struct
+typedef struct s_intersections intersections;  // define the typedef
+struct s_shape;
+typedef struct s_shape shape;
+
+
+typedef	struct s_shape
 {
+	shape_type	type;
 	int			id;
 	matrix		transform;
 	material	material;
-}	sphere;
 
+	intersections	(*intersect)(shape *self, ray r);
+	tuple			(*normal_at)(shape *self, tuple world_point);
 
-typedef struct 
+}	shape;
+
+typedef struct s_intersections
 {
 	float	t;
-	sphere	object;
+	shape	object;
 }	intersection;
 
 #define MAX_INTERSECTIONS 100
@@ -135,14 +151,16 @@ typedef struct
 
 ray				create_ray(tuple origin, tuple direction);
 tuple			position(ray r, float t);
-sphere			create_sphere(void);
-intersections	intersect(sphere s, ray r);
-intersection	create_intersection(float t, sphere object);
+shape			create_sphere(void);
+intersections	intersect(shape *s, ray r);
+intersections sphere_intersect(shape s, ray r);
+intersection	create_intersection(float t, shape object);
 intersections	make_intersections(intersection i1, intersection i2);
 intersection*	hit(intersections* xs);
 ray				transform(ray r, matrix m);
-void	set_transform(sphere *s, matrix t);
-tuple	normal_at(sphere s, tuple p);
+void	set_transform(shape *s, matrix t);
+tuple	sphere_normal_at(shape s, tuple p);
+tuple	normal_at(shape *s, tuple p);
 tuple	reflect(tuple in, tuple normal);
 
 
@@ -154,7 +172,7 @@ tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv, bool in_
 
 typedef struct
 {	
-	sphere	*objects;
+	shape	*objects;
 	light	*lights;
 	int		object_count;
 	int		light_count;
@@ -163,7 +181,7 @@ typedef struct
 typedef struct s_computation
 {
 	float	t;
-	sphere	object;     // the intersected object
+	shape	object;     // the intersected object
 	tuple	point;      // the point of intersection
 	tuple	eyev;       // the eye (view) vector
 	tuple	normalv;    // the normal vector at the point

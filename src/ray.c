@@ -1,13 +1,16 @@
 #include "raytracing.h"
 
-sphere	create_sphere(void)
+shape	create_sphere(void)
 {
-	sphere	s;
+	shape	s;
 	static int id = 0;
 
+	s.type = SHAPE_SPHERE;
 	s.id = id++;
 	s.transform = matrix_identity(4);
 	s.material = create_material();
+	s.intersect = &sphere_intersect;
+	s.normal_at = &sphere_normal_at;
 	return (s);
 }
 
@@ -21,7 +24,7 @@ tuple	position(ray r, float t)
 	return (add_tuple(r.origin, mult_tuple_scalar(r.direction, t)));
 }
 
-intersection	create_intersection(float t, sphere s)
+intersection	create_intersection(float t, shape s)
 {
 	return ((intersection){t, s});
 }
@@ -35,7 +38,7 @@ intersections	create_intersections(intersection i1, intersection i2)
     return (xs);
 }
 
-intersections intersect(sphere s, ray r)
+intersections sphere_intersect(shape s, ray r)
 {
     intersections result;
     result.count = 0;
@@ -87,12 +90,17 @@ ray	transform(ray r, matrix m)
 	return (r);
 }
 
-void	set_transform(sphere *s, matrix t)
+void	set_transform(shape *s, matrix t)
 {
 	s->transform = t;
 }
 
-tuple	normal_at(sphere s, tuple world_point)
+tuple	normal_at(shape *s, tuple world_point)
+{
+	return (sphere_normal_at(*s, world_point));
+}
+
+tuple	sphere_normal_at(shape s, tuple world_point)
 {
 	matrix	inv = inverse(s.transform);
 	tuple	object_point = matrix_multiply_tuple(inv, world_point);

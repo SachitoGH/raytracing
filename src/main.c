@@ -6,7 +6,7 @@
 void	test_hit_offsets_point(void)
 {
 	ray r = create_ray(point(0, 0, -5), vector(0, 0, 1));
-	sphere s = create_sphere();
+	shape s = create_sphere();
 	set_transform(&s, translation(0, 0, 1));
 	intersection i = create_intersection(5, s);
 	computation comps = prepare_computations(i, r);
