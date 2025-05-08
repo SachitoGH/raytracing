@@ -47,9 +47,23 @@ ray	transform(ray r, matrix m)
 	return (r);
 }
 
-tuple	normal_at(shape *s, tuple world_point)
+tuple normal_at(shape *s, tuple world_point)
 {
-	return (s->normal_at(s, world_point));
+    // Transform the world point to object coordinates
+    matrix inv = inverse(s->transform);
+    tuple object_point = matrix_multiply_tuple(inv, world_point);
+
+    // Get the local normal from the shape's specific normal_at function
+    tuple object_normal = s->normal_at(s, object_point);
+
+    // Transform the normal to world coordinates using inverse transpose
+    tuple world_normal = matrix_multiply_tuple(matrix_transpose(inv), object_normal);
+
+    // Ensure it's a vector
+    world_normal.w = 0;
+
+    // Normalize the world normal
+    return normalize(world_normal);
 }
 
 tuple	reflect(tuple in, tuple normal)

@@ -218,4 +218,11 @@ shape	create_sphere(void);
 intersections sphere_intersect(shape *s, ray r);
 tuple	sphere_normal_at(shape *s, tuple world_point);
 
+// plane.c
+
+shape	create_plane(void);
+intersections	plane_intersect(shape *p, ray r);
+tuple	plane_normal_at(shape *p, tuple world_point);
+
+
 #endif

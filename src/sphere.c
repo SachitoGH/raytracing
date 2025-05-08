@@ -14,12 +14,10 @@ shape	create_sphere(void)
 	return (s);
 }
 
-intersections sphere_intersect(shape *s, ray r)
+intersections sphere_intersect(shape *s, ray local_ray)
 {
     intersections result;
     result.count = 0;
-
-    ray local_ray = transform(r, inverse(s->transform));  // transform ray into object space
 
     tuple sphere_to_ray = sub_tuple(local_ray.origin, point(0, 0, 0));
 
@@ -42,12 +40,9 @@ intersections sphere_intersect(shape *s, ray r)
     return (result);
 }
 
-tuple	sphere_normal_at(shape *s, tuple world_point)
+tuple sphere_normal_at(shape *s, tuple object_point)
 {
-	matrix	inv = inverse(s->transform);
-	tuple	object_point = matrix_multiply_tuple(inv, world_point);
-	tuple	object_normal = sub_tuple(object_point, point(0, 0, 0));
-	tuple	world_normal = matrix_multiply_tuple(matrix_transpose(inv), object_normal);
-	world_normal.w = 0;
-	return (normalize(world_normal));
+	(void)s;
+    // Local normal for a sphere is the vector from center to point
+    return sub_tuple(object_point, point(0, 0, 0));
 }

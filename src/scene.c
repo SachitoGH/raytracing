@@ -9,8 +9,8 @@ world default_world(void)
 	w.lights = malloc(sizeof(light) * w.light_count);
 	w.lights[0] = point_light(point(-10, 10, -10), color(1, 1, 1));
     
-    // Allocate memory for 2 spheres
-    w.object_count = 2;
+    // Allocate memory for 2 spheres and a plane
+    w.object_count = 3;
     w.objects = malloc(sizeof(shape) * w.object_count);
     
     // First sphere: default material and transformation
@@ -18,11 +18,16 @@ world default_world(void)
     w.objects[0].material.color = color(0.8, 1.0, 0.6); // Example color
     w.objects[0].material.diffuse = 0.7;
 	w.objects[0].material.specular = 0.2;
+	w.objects[0].transform = translation(2, 0, 0);
     
     // Second sphere: scaled, with a different material
     w.objects[1] = create_sphere();
     set_transform(&w.objects[1], scaling(0.5, 0.5, 0.5)); // Scale the second sphere
     
+	w.objects[2] = create_plane();
+	w.objects[2].material.color = color(0, 0.5, 1);
+	w.objects[2].transform = matrix_multiply(translation(0, -1, 0), rotation_x(0));
+	
     return w;
 }
 
@@ -75,9 +80,10 @@ intersections intersect_world(world w, ray r)
     return xs;
 }
 
-intersections	intersect(shape *object, ray r)
+intersections intersect(shape *object, ray r)
 {
-	return (object->intersect(object, r));
+	ray	local_ray = transform(r, inverse(object->transform));
+    return (object->intersect(object, local_ray));
 }
 
 matrix view_transform(tuple from, tuple to, tuple up)
