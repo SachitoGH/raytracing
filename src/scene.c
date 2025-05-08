@@ -77,7 +77,7 @@ intersections intersect_world(world w, ray r)
 
 intersections	intersect(shape *object, ray r)
 {
-	return (sphere_intersect(object, r));
+	return (object->intersect(object, r));
 }
 
 matrix view_transform(tuple from, tuple to, tuple up)

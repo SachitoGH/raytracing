@@ -49,7 +49,7 @@ ray	transform(ray r, matrix m)
 
 tuple	normal_at(shape *s, tuple world_point)
 {
-	return (sphere_normal_at(s, world_point));
+	return (s->normal_at(s, world_point));
 }
 
 tuple	reflect(tuple in, tuple normal)
