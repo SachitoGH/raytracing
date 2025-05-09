@@ -18,6 +18,7 @@ typedef	struct
 	float	w;
 }	tuple;
 
+
 typedef	struct
 {
 	int		width;
@@ -35,6 +36,13 @@ typedef struct
 
 typedef struct
 {
+	tuple	a;
+	tuple	b;
+	matrix	transform;
+}	pattern;
+
+typedef struct
+{
 	tuple	position;
 	tuple	intensity;
 }	light;
@@ -46,6 +54,8 @@ typedef struct
 	float	diffuse;
 	float	specular;
 	float	shininess;
+	bool	pattern_flag;
+	pattern	pattern;
 }	material;
 
 typedef struct
@@ -119,6 +129,7 @@ typedef	struct
 	float half_width;
 	float half_height;
 }	camera;
+
 
 // tuples.c
 
@@ -203,7 +214,7 @@ tuple	reflect(tuple in, tuple normal);
 
 // render.c
 
-tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv, bool in_shadow);
+tuple	lighting(material m, shape object, light l, tuple p, tuple eyev, tuple normalv, bool in_shadow);
 bool is_shadowed(world w, tuple p, light l);
 tuple		shade_hit(world w, computation c);
 tuple	color_at(world w, ray r);
@@ -223,6 +234,12 @@ tuple	sphere_normal_at(shape *s, tuple world_point);
 shape	create_plane(void);
 intersections	plane_intersect(shape *p, ray r);
 tuple	plane_normal_at(shape *p, tuple world_point);
+
+// patterns.c
+
+pattern	stripe_pattern(tuple a, tuple b);
+tuple	stripe_at(pattern s, tuple p);
+tuple	stripe_at_object(pattern pattern, shape object, tuple world_point);
 
 
 #endif

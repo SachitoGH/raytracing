@@ -145,5 +145,6 @@ material	create_material(void)
 	m.diffuse = 0.9;
 	m.specular = 0.9;
 	m.shininess = 200.0;
+	m.pattern_flag = false;
 	return (m);
 }

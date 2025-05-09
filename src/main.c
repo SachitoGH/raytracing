@@ -1,16 +1,23 @@
 #include "raytracing.h"
 
+
 int main(void)
 {
-	world w = default_world();
+	material m;
+	shape	sphere = create_sphere();
 
-	camera cam = create_camera(1000, 500, 60);
-	cam.transform = view_transform(point(0, 2, -10), point(1, 0, 0), vector(0, 1, 0));
-
-
-	canvas image = low_render(cam, w, 5);
-	canvas_to_ppm(&image, "scene.ppm");
-	destroy_canvas(&image);
-	destroy_world(&w);
-	return (0);
+	m.pattern = stripe_pattern(color(1, 1, 1), color(0, 0, 0));
+	m.pattern_flag = true;
+	m.ambient = 1;
+	m.diffuse = 0;
+	m.specular = 0;
+	tuple eyev = vector(0, 0, -1);
+	tuple normalv = vector(0, 0, -1);
+	sphere.material = m;
+	light l = point_light(point(0, 0, -10), color(1, 1, 1));
+	tuple c1 = lighting(m, sphere, l, point(0.9, 0, 0), eyev, normalv, false);
+	tuple c2 = lighting(m, sphere, l, point(1.1, 0, 0), eyev, normalv, false);
+	print_tuple(c1);
+	print_tuple(c2);
+	return(0);
 }

@@ -1,6 +1,6 @@
 NAME        = raytracing
 
-SRC         = src/main.c \
+SRC         = challenge/simple.c \
 			  src/tuples.c \
 			  src/drawing.c \
 			  src/matrix.c	\
@@ -9,7 +9,8 @@ SRC         = src/main.c \
 			  src/sphere.c \
 			  src/transformation.c \
 			  src/render.c \
-			  src/plane.c
+			  src/plane.c \
+			  src/patterns.c
 
 OBJ         = $(SRC:.c=.o)
 

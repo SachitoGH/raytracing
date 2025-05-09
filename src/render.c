@@ -1,10 +1,15 @@
 #include "raytracing.h"
 
-tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv, bool in_shadow)
+tuple	lighting(material m, shape object, light l, tuple p, tuple eyev, tuple normalv, bool in_shadow)
 {
 	tuple	diffuse;
 	tuple	specular;
-	tuple	effective_color = mult_tuple(m.color, l.intensity);
+	tuple	col;
+	if (m.pattern_flag)
+		col = stripe_at_object(m.pattern, object, p);
+	else
+		col = m.color;
+	tuple	effective_color = mult_tuple(col, l.intensity);
 	tuple	lightv = normalize(sub_tuple(l.position, p));
 	tuple	ambient = mult_tuple_scalar(effective_color, m.ambient);
 	float	light_dot_normal = dot(lightv, normalv);
@@ -50,7 +55,7 @@ tuple		shade_hit(world w, computation c)
 {
 	tuple	res = color(0, 0, 0);
 	for (int i = 0; i < w.light_count; i++)
-		res = add_tuple(res, lighting(c.object.material, w.lights[i], c.point, c.eyev, c.normalv, is_shadowed(w, c.over_point, w.lights[i])));
+		res = add_tuple(res, lighting(c.object.material, c.object, w.lights[i], c.point, c.eyev, c.normalv, is_shadowed(w, c.over_point, w.lights[i])));
 	return (res);
 }
 
