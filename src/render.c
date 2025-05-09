@@ -1,4 +1,5 @@
 #include "raytracing.h"
+#include <time.h>
 
 tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv, bool in_shadow)
 {
@@ -91,52 +92,59 @@ computation	prepare_computations(intersection i, ray r)
 	return (comps);
 }
 
-ray ray_for_pixel(camera cam, int px, int py)
+tuple dir_for_pixel(camera *cam, matrix *inv, tuple *origin, int px, int py)
 {
     // Offset from the edge of the canvas to the pixel center
-    float xoffset = (px + 0.5f) * cam.pixel_size;
-    float yoffset = (py + 0.5f) * cam.pixel_size;
+    float xoffset = (px + 0.5f) * cam->pixel_size;
+    float yoffset = (py + 0.5f) * cam->pixel_size;
 
     // Untransformed coordinates of the pixel in world space
-    float world_x = cam.half_width - xoffset;
-    float world_y = cam.half_height - yoffset;
+    float world_x = cam->half_width - xoffset;
+    float world_y = cam->half_height - yoffset;
 
     // Using the camera matrix, transform the canvas point and the origin
-    matrix inv = inverse(cam.transform);
-    tuple pixel = matrix_multiply_tuple(inv, point(world_x, world_y, -1));
-    tuple origin = matrix_multiply_tuple(inv, point(0, 0, 0));
-    tuple direction = normalize(sub_tuple(pixel, origin));
-
-    return create_ray(origin, direction);
+    tuple pixel = matrix_multiply_tuple(*inv, point(world_x, world_y, -1));
+    return normalize(sub_tuple(pixel, *origin));
 }
 
 canvas render(camera cam, world w)
 {
-	canvas image = create_canvas(cam.hsize, cam.vsize);
+	canvas	image = create_canvas(cam.hsize, cam.vsize);
+	matrix	inv = inverse(cam.transform);
+	clock_t	start = clock();
+	ray		r;
 
+	printf("Rendering...\n");
+	r.origin = matrix_multiply_tuple(inv, point(0, 0, 0));
 	for (int y = 0; y < cam.vsize; y++)
 	{
 		for (int x = 0; x < cam.hsize; x++)
 		{
-			ray r = ray_for_pixel(cam, x, y);
-			tuple color_at_pixel = color_at(w, r);
-			write_pixel(&image, x, y, color_at_pixel);
+			r.direction = dir_for_pixel(&cam, &inv, &r.origin,x, y);
+			write_pixel(&image, x, y, color_at(w, r));
 		}
 	}
+	printf("Time: %.6f\n", (clock() - start) / (float) CLOCKS_PER_SEC);
 	return image;
 }
-
+/*
 canvas low_render(camera cam, world w, int step)
 {
-    canvas image = create_canvas(cam.hsize, cam.vsize);
+    canvas	image = create_canvas(cam.hsize, cam.vsize);
+	matrix	inv = inverse(cam.transform);
+	clock_t	start = clock();
+	tuple	color_at_pixel;
+	ray		r;
 
+	printf("Rendering...\n");
+	r.origin = matrix_multiply_tuple(inv, point(0, 0, 0));
     // Render every 'step'th pixel
     for (int y = 0; y < cam.vsize; y += step)
     {
         for (int x = 0; x < cam.hsize; x += step)
         {
-            ray r = ray_for_pixel(cam, x, y);
-            tuple color_at_pixel = color_at(w, r);
+            r.direction = dir_for_pixel(&cam, &inv, &r.origin,x, y);
+            color_at_pixel = color_at(w, r);
 
             // Write the computed color to a block of pixels
             for (int dy = 0; dy < step && y + dy < cam.vsize; dy++)
@@ -150,4 +158,4 @@ canvas low_render(camera cam, world w, int step)
     }
 
     return image;
-}
+}*/

@@ -1,12 +1,13 @@
 #ifndef raytracing
-#define raytracing
+# define raytracing
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <math.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <stdbool.h>
+# include <math.h>
 
-#define EPSILON 0.00001f
+# define EPSILON 0.00001f
+# define DEG_RADIANTS 0.017453293
 
 // struct
 
@@ -160,7 +161,8 @@ tuple matrix_multiply_tuple(matrix m, tuple t);
 matrix matrix_multiply(matrix a, matrix b);
 int matrix_equal(matrix a, matrix b);
 matrix matrix_zero(int size);
-matrix matrix_identity(int size);
+matrix matrix_identity(void);
+matrix matrix_identity2(int size);
 matrix matrix_transpose(matrix m);
 matrix inverse(matrix m);
 float minor(matrix m, int row, int col);

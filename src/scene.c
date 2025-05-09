@@ -87,7 +87,7 @@ matrix view_transform(tuple from, tuple to, tuple up)
 	tuple left = cross(forward, upn);
 	tuple true_up = cross(left, forward);
 
-	matrix orientation = matrix_identity(4);
+	matrix orientation = matrix_identity();
 	orientation.data[0][0] = left.x;
 	orientation.data[0][1] = left.y;
 	orientation.data[0][2] = left.z;
@@ -110,8 +110,8 @@ camera	create_camera(int hsize, int vsize, float fov)
 	camera cam;
 	cam.hsize = hsize;
 	cam.vsize = vsize;
-	cam.fov = fov * (M_PI / 180.0f); //convert to rad
-	cam.transform = matrix_identity(4);
+	cam.fov = fov * DEG_RADIANTS; //convert to rad
+	cam.transform = matrix_identity();
 
 	float half_view = tanf(cam.fov / 2);
 	float aspect = (float)hsize / (float)vsize;

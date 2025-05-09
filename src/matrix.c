@@ -1,6 +1,21 @@
 #include "raytracing.h"
+#include <string.h>
 
-matrix matrix_identity(int size)
+matrix matrix_identity(void)
+{
+    const float identity[16] = {
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    };
+    matrix m;
+    m.size = 4;
+    memcpy(m.data, identity, sizeof(identity));
+    return m;
+}
+
+matrix matrix_identity2(int size)
 {
     matrix m = { .size = size };
     for (int i = 0; i < size; ++i)
@@ -140,7 +155,7 @@ matrix inverse(matrix m)
 
     if (!is_invertible(m))
     {
-        printf("Matrix is not invertible!\n");
+        //printf("Matrix is not invertible!\n");
         return (result);
     }
 

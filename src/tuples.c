@@ -2,16 +2,12 @@
 
 bool	equal(float a, float b)
 {
-	if (fabsf(a - b) < EPSILON)
-		return (true);
-	return (false);
+	return (fabsf(a - b) < EPSILON);
 }
 
 bool	equal_tuple(tuple a, tuple b)
 {
-	if (equal(a.x, b.x) && equal(a.y, b.y) && equal(a.z, b.z) && equal(a.w, b.w))
-		return (true);
-	return (false);
+	return (equal(a.x, b.x) && equal(a.y, b.y) && equal(a.z, b.z) && equal(a.w, b.w));
 }
 
 void	print_tuple(tuple t)
