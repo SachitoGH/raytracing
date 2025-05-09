@@ -36,6 +36,7 @@ typedef struct
 
 
 typedef enum {
+	UNSET,
 	PATTERN_STRIPE,
 	PATTERN_GRADIENT,
 	PATTERN_RING,
@@ -69,7 +70,6 @@ typedef struct
 	float	diffuse;
 	float	specular;
 	float	shininess;
-	bool	pattern_flag;
 	pattern	pattern;
 }	material;
 

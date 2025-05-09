@@ -5,7 +5,7 @@ tuple	lighting(material m, shape object, light l, tuple p, tuple eyev, tuple nor
 	tuple	diffuse;
 	tuple	specular;
 	tuple	col;
-	if (m.pattern_flag)
+	if (m.pattern.type != UNSET)
 		col = pattern_at_object(&m.pattern, object, p);
 	else
 		col = m.color;
