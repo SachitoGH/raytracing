@@ -255,5 +255,13 @@ tuple	plane_normal_at(shape *p, tuple world_point);
 pattern	stripe_pattern(tuple a, tuple b);
 tuple	stripe_at(pattern *s, tuple p);
 tuple	pattern_at_object(pattern *p, shape s, tuple world_point);
+pattern	gradient_pattern(tuple a, tuple b);
+tuple	gradient_at(pattern *p, tuple point);
+pattern	ring_pattern(tuple a, tuple b);
+tuple	ring_at(pattern *p, tuple point);
+pattern	checker_pattern(tuple a, tuple b);
+tuple	checker_at(pattern *p, tuple point);
+
+
 
 #endif
