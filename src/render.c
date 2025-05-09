@@ -6,7 +6,7 @@ tuple	lighting(material m, shape object, light l, tuple p, tuple eyev, tuple nor
 	tuple	specular;
 	tuple	col;
 	if (m.pattern_flag)
-		col = stripe_at_object(m.pattern, object, p);
+		col = pattern_at_object(&m.pattern, object, p);
 	else
 		col = m.color;
 	tuple	effective_color = mult_tuple(col, l.intensity);

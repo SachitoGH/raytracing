@@ -34,12 +34,27 @@ typedef struct
 	float	data[MAX_MATRIX][MAX_MATRIX];
 }	matrix;
 
-typedef struct
+
+typedef enum {
+	PATTERN_STRIPE,
+	PATTERN_GRADIENT,
+	PATTERN_RING,
+	PATTERN_CHECKER
+	// Add more as needed
+} pattern_type;
+
+typedef struct pattern pattern;
+
+struct pattern
 {
-	tuple	a;
-	tuple	b;
-	matrix	transform;
-}	pattern;
+	pattern_type	type;
+	matrix			transform;
+
+	tuple			a;  // Color A
+	tuple			b;  // Color B
+
+	tuple	(*pattern_at)(pattern *self, tuple point);
+};
 
 typedef struct
 {
@@ -238,8 +253,7 @@ tuple	plane_normal_at(shape *p, tuple world_point);
 // patterns.c
 
 pattern	stripe_pattern(tuple a, tuple b);
-tuple	stripe_at(pattern s, tuple p);
-tuple	stripe_at_object(pattern pattern, shape object, tuple world_point);
-
+tuple	stripe_at(pattern *s, tuple p);
+tuple	pattern_at_object(pattern *p, shape s, tuple world_point);
 
 #endif
