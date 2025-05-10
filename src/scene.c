@@ -9,8 +9,8 @@ world default_world(void)
 	w.lights = malloc(sizeof(light) * w.light_count);
 	w.lights[0] = point_light(point(-10.0f, 10.0f, -10.0f), color(1.0f, 1.0f, 1.0f));
     
-    // Allocate memory for 2 spheres and a plane
-    w.object_count = 3;
+    // Allocate memory for 2 spheres and a 3 planes
+    w.object_count = 4;
     w.objects = malloc(sizeof(shape) * w.object_count);
     
     // First sphere: default material and transformation
@@ -25,8 +25,12 @@ world default_world(void)
     w.objects[1].transform = scaling(0.5f, 0.5f, 0.5f);
 
 	w.objects[2] = create_plane();
-	w.objects[2].material.color = color(0.0f, 0.5f, 1.0f);
+	w.objects[2].material.color = color(1.0f, 1.0f, 1.0f);
 	w.objects[2].transform = matrix_multiply(translation(0.0f, -1.0f, 0.0f), rotation_x(0.0f));
+
+	w.objects[3] = create_plane();
+	w.objects[3].material.color = color(1.0f, 1.0f, 1.0f);
+	w.objects[3].transform = matrix_multiply(translation(0.0f, 0.0f, 3.0f), rotation_x(90.0f));
 	
     return w;
 }
