@@ -83,6 +83,7 @@ typedef struct
 typedef enum {
 	SHAPE_SPHERE,
 	SHAPE_PLANE,
+	SHAPE_CUBE
 	// Add more types as needed
 } shape_type;
 
@@ -253,6 +254,12 @@ shape	create_plane(void);
 intersections	plane_intersect(shape *p, ray r);
 tuple	plane_normal_at(shape *p, tuple world_point);
 
+// cube.c
+
+shape create_cube(void);
+tuple cube_normal_at(shape *cube, tuple object_point);
+intersections cube_intersect(shape *cube, ray local_ray);
+
 // patterns.c
 
 pattern	stripe_pattern(tuple a, tuple b);
@@ -264,6 +271,7 @@ pattern	ring_pattern(tuple a, tuple b);
 tuple	ring_at(pattern *p, tuple point);
 pattern	checker_pattern(tuple a, tuple b);
 tuple	checker_at(pattern *p, tuple point);
+
 
 
 

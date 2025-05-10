@@ -21,8 +21,9 @@ world default_world(void)
 	w.objects[0].transform = translation(2.0f, 0.0f, 0.0f);
     
     // Second sphere: scaled, with a different material
-    w.objects[1] = create_sphere();
-    w.objects[1].transform = scaling(0.5f, 0.5f, 0.5f);
+    w.objects[1] = create_cube();
+	w.objects[1].material.pattern = checker_pattern(color(1, 1, 1), color(0, 0, 0));
+    // w.objects[1].transform = scaling(0.5f, 0.5f, 0.5f);
 
 	w.objects[2] = create_plane();
 	w.objects[2].material.color = color(1.0f, 1.0f, 1.0f);

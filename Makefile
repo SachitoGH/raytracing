@@ -10,6 +10,7 @@ SRC         = challenge/simple.c \
 			  src/transformation.c \
 			  src/render.c \
 			  src/plane.c \
+			  src/cube.c \
 			  src/patterns.c
 
 OBJ         = $(SRC:.c=.o)
