@@ -18,20 +18,26 @@ world default_world(void)
     w.objects[0].material.color = color(0.8f, 1.0f, 0.6f); // Example color
     w.objects[0].material.diffuse = 0.7f;
 	w.objects[0].material.specular = 0.2f;
-	w.objects[0].transform = translation(2.0f, 0.0f, 0.0f);
+	w.objects[0].transform = translation(-2.0f, 0.0f, 0.0f);
     
     // Second sphere: scaled, with a different material
     w.objects[1] = create_cube();
-	w.objects[1].material.pattern = checker_pattern(color(1, 1, 1), color(0, 0, 0));
+	w.objects[1].material.color = color(1.0f, 0.6f, 0.0f);
+	w.objects[1].transform = matrix_multiply(translation(3.0f, 0.0f, -1.0f), rotation_y(45.0f));
+	// w.objects[1].material.pattern = checker_pattern(color(1, 1, 1), color(0, 0, 0));
     // w.objects[1].transform = scaling(0.5f, 0.5f, 0.5f);
 
 	w.objects[2] = create_plane();
 	w.objects[2].material.color = color(1.0f, 1.0f, 1.0f);
+	w.objects[2].material.reflective = 0.3f;
+	w.objects[2].material.pattern = checker_pattern(color(1, 1, 1), color(0, 0, 0));;
 	w.objects[2].transform = matrix_multiply(translation(0.0f, -1.0f, 0.0f), rotation_x(0.0f));
 
 	w.objects[3] = create_plane();
 	w.objects[3].material.color = color(1.0f, 1.0f, 1.0f);
-	w.objects[3].transform = matrix_multiply(translation(0.0f, 0.0f, 3.0f), rotation_x(90.0f));
+	w.objects[3].material.pattern = gradient_pattern(color(1, 0, 0), color(0, 0, 1));
+	w.objects[3].material.pattern.transform = scaling(20, 1, 1);
+	w.objects[3].transform = matrix_multiply(translation(10.0f, 0.0f, 3.0f), rotation_x(90.0f));
 	
     return w;
 }
