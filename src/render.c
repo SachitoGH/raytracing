@@ -51,23 +51,37 @@ bool is_shadowed(world w, tuple p, light l)
 }
 
 
-tuple		shade_hit(world w, computation c)
+tuple		shade_hit(world w, computation c, int remaining)
 {
 	tuple	res = color(0.0f, 0.0f, 0.0f);
 	for (int i = 0; i < w.light_count; i++)
+	{
 		res = add_tuple(res, lighting(c.object.material, c.object, w.lights[i], c.point, c.eyev, c.normalv, is_shadowed(w, c.over_point, w.lights[i])));
+		res = add_tuple(res, reflected_color(w, c, remaining));
+	}
 	return (res);
 }
 
-tuple	color_at(world w, ray r)
+tuple	color_at(world w, ray r, int remaining)
 {
 	intersections	xs = intersect_world(w, r);
 	intersection	*i = hit(&xs);
 	if (!i)
 		return (color(0.0f, 0.0f, 0.0f));
 	computation		c = prepare_computations(*i, r);
-	return (shade_hit(w, c));
+	return (shade_hit(w, c, remaining));
 }
+
+tuple reflected_color(world w, computation comps, int remaining)
+{
+    if (comps.object.material.reflective < EPSILON || remaining <= 0)
+        return (color(0, 0, 0));
+
+    ray reflect_ray = create_ray(comps.over_point, comps.reflectv);
+    tuple color = color_at(w, reflect_ray, remaining - 1);
+    return (mult_tuple_scalar(color, comps.object.material.reflective));
+}
+
 
 computation	prepare_computations(intersection i, ray r)
 {
@@ -92,6 +106,7 @@ computation	prepare_computations(intersection i, ray r)
 	// Avoid shadow acne by pushing the point slightly above the surface
 	tuple offset = mult_tuple_scalar(comps.normalv, 0.01f);
 	comps.over_point = add_tuple(comps.point, offset);
+	comps.reflectv = reflect(r.direction, comps.normalv);
 
 	return (comps);
 }
@@ -124,7 +139,7 @@ canvas render(camera cam, world w)
 		for (int x = 0; x < cam.hsize; x++)
 		{
 			ray r = ray_for_pixel(cam, x, y);
-			tuple color_at_pixel = color_at(w, r);
+			tuple color_at_pixel = color_at(w, r, 4);
 			write_pixel(&image, x, y, color_at_pixel);
 		}
 	}
@@ -141,7 +156,7 @@ canvas low_render(camera cam, world w, int step)
         for (int x = 0; x < cam.hsize; x += step)
         {
             ray r = ray_for_pixel(cam, x, y);
-            tuple color_at_pixel = color_at(w, r);
+            tuple color_at_pixel = color_at(w, r, 4);
 
             // Write the computed color to a block of pixels
             for (int dy = 0; dy < step && y + dy < cam.vsize; dy++)

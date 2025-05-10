@@ -22,8 +22,8 @@ world default_world(void)
     
     // Second sphere: scaled, with a different material
     w.objects[1] = create_sphere();
-    set_transform(&w.objects[1], scaling(0.5f, 0.5f, 0.5f)); // Scale the second sphere
-    
+    w.objects[1].transform = scaling(0.5f, 0.5f, 0.5f);
+
 	w.objects[2] = create_plane();
 	w.objects[2].material.color = color(0.0f, 0.5f, 1.0f);
 	w.objects[2].transform = matrix_multiply(translation(0.0f, -1.0f, 0.0f), rotation_x(0.0f));

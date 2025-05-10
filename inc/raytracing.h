@@ -133,6 +133,7 @@ typedef struct s_computation
 	tuple	normalv;    // the normal vector at the point
 	tuple	over_point;
 	bool	inside;     // true if the intersection occurs inside the object
+	tuple	reflectv;
 }	computation;
 
 typedef	struct
@@ -232,12 +233,13 @@ tuple	reflect(tuple in, tuple normal);
 
 tuple	lighting(material m, shape object, light l, tuple p, tuple eyev, tuple normalv, bool in_shadow);
 bool is_shadowed(world w, tuple p, light l);
-tuple		shade_hit(world w, computation c);
-tuple	color_at(world w, ray r);
+tuple		shade_hit(world w, computation c, int remaining);
+tuple	color_at(world w, ray r, int remaining);
 computation	prepare_computations(intersection i, ray r);
 ray ray_for_pixel(camera cam, int px, int py);
 canvas render(camera cam, world w);
 canvas low_render(camera cam, world w, int step);
+tuple reflected_color(world w, computation comps, int remaining);
 
 // sphere.c
 
