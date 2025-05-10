@@ -33,5 +33,5 @@ tuple plane_normal_at(shape *p, tuple object_point)
 	(void)p;
 	(void)object_point;
     // Local normal is always (0, 1, 0) for a plane
-    return vector(0, 1, 0);
+    return vector(0.0f, 1.0f, 0.0f);
 }

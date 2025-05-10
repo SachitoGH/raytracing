@@ -25,12 +25,12 @@ void	print_tuple(tuple t)
 
 tuple	point(float x, float y, float z)
 {
-	return ((tuple){x, y, z, 1.0});
+	return ((tuple){x, y, z, 1.0f});
 }
 
 tuple	vector(float x, float y, float z)
 {
-	return ((tuple){x, y, z, 0.0});
+	return ((tuple){x, y, z, 0.0f});
 }
 
 tuple	sub_tuple(tuple a, tuple b)
@@ -83,5 +83,5 @@ tuple	cross(tuple a, tuple b)
 	return ((tuple){a.y * b.z - a.z * b.y, 
 					a.z * b.x - a.x * b.z,
 					a.x * b.y - a.y * b.x,
-					0.0});
+					0.0f});
 }

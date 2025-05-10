@@ -71,6 +71,7 @@ typedef struct
 	float	specular;
 	float	shininess;
 	pattern	pattern;
+	float	reflective;
 }	material;
 
 typedef struct

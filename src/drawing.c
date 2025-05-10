@@ -34,7 +34,7 @@ void write_pixel(canvas* c, int x, int y, tuple col)
 
 tuple	color(float r, float g, float b)
 {
-	return ((tuple){r, g, b, 0.0});
+	return ((tuple){r, g, b, 0.0f});
 }
 
 int to_ppm_component(float value)

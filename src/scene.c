@@ -7,7 +7,7 @@ world default_world(void)
     // Create a light source
     w.light_count = 1;
 	w.lights = malloc(sizeof(light) * w.light_count);
-	w.lights[0] = point_light(point(-10, 10, -10), color(1, 1, 1));
+	w.lights[0] = point_light(point(-10.0f, 10.0f, -10.0f), color(1.0f, 1.0f, 1.0f));
     
     // Allocate memory for 2 spheres and a plane
     w.object_count = 3;
@@ -15,18 +15,18 @@ world default_world(void)
     
     // First sphere: default material and transformation
     w.objects[0] = create_sphere(); // Using the create_sphere function from your previous code
-    w.objects[0].material.color = color(0.8, 1.0, 0.6); // Example color
-    w.objects[0].material.diffuse = 0.7;
-	w.objects[0].material.specular = 0.2;
-	w.objects[0].transform = translation(2, 0, 0);
+    w.objects[0].material.color = color(0.8f, 1.0f, 0.6f); // Example color
+    w.objects[0].material.diffuse = 0.7f;
+	w.objects[0].material.specular = 0.2f;
+	w.objects[0].transform = translation(2.0f, 0.0f, 0.0f);
     
     // Second sphere: scaled, with a different material
     w.objects[1] = create_sphere();
-    set_transform(&w.objects[1], scaling(0.5, 0.5, 0.5)); // Scale the second sphere
+    set_transform(&w.objects[1], scaling(0.5f, 0.5f, 0.5f)); // Scale the second sphere
     
 	w.objects[2] = create_plane();
-	w.objects[2].material.color = color(0, 0.5, 1);
-	w.objects[2].transform = matrix_multiply(translation(0, -1, 0), rotation_x(0));
+	w.objects[2].material.color = color(0.0f, 0.5f, 1.0f);
+	w.objects[2].transform = matrix_multiply(translation(0.0f, -1.0f, 0.0f), rotation_x(0.0f));
 	
     return w;
 }
@@ -141,10 +141,11 @@ material	create_material(void)
 {
 	material	m;
 	m.color = color(1, 1, 1);
-	m.ambient = 0.1;
-	m.diffuse = 0.9;
-	m.specular = 0.9;
-	m.shininess = 200.0;
+	m.ambient = 0.1f;
+	m.diffuse = 0.9f;
+	m.specular = 0.9f;
+	m.shininess = 200.0f;
 	m.pattern.type = UNSET;
+	m.reflective = 0.0f;
 	return (m);
 }

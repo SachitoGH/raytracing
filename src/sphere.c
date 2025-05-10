@@ -19,7 +19,7 @@ intersections sphere_intersect(shape *s, ray local_ray)
     intersections result;
     result.count = 0;
 
-    tuple sphere_to_ray = sub_tuple(local_ray.origin, point(0, 0, 0));
+    tuple sphere_to_ray = sub_tuple(local_ray.origin, point(0.0f, 0.0f, 0.0f));
 
     float a = dot(local_ray.direction, local_ray.direction);
     float b = 2 * dot(local_ray.direction, sphere_to_ray);
@@ -44,5 +44,5 @@ tuple sphere_normal_at(shape *s, tuple object_point)
 {
 	(void)s;
     // Local normal for a sphere is the vector from center to point
-    return sub_tuple(object_point, point(0, 0, 0));
+    return sub_tuple(object_point, point(0.0f, 0.0f, 0.0f));
 }

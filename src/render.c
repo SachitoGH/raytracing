@@ -20,7 +20,7 @@ tuple	lighting(material m, shape object, light l, tuple p, tuple eyev, tuple nor
 	tuple	reflectv = reflect(negate_tuple(lightv), normalv);
 	float	reflect_dot_eye = dot(reflectv, eyev);
 	if (reflect_dot_eye <= EPSILON)
-		specular = color(0, 0, 0);
+		specular = color(0.0f, 0.0f, 0.0f);
 	else
 	{
 		float factor = pow(reflect_dot_eye, m.shininess);
@@ -53,7 +53,7 @@ bool is_shadowed(world w, tuple p, light l)
 
 tuple		shade_hit(world w, computation c)
 {
-	tuple	res = color(0, 0, 0);
+	tuple	res = color(0.0f, 0.0f, 0.0f);
 	for (int i = 0; i < w.light_count; i++)
 		res = add_tuple(res, lighting(c.object.material, c.object, w.lights[i], c.point, c.eyev, c.normalv, is_shadowed(w, c.over_point, w.lights[i])));
 	return (res);
@@ -64,7 +64,7 @@ tuple	color_at(world w, ray r)
 	intersections	xs = intersect_world(w, r);
 	intersection	*i = hit(&xs);
 	if (!i)
-		return (color(0, 0, 0));
+		return (color(0.0f, 0.0f, 0.0f));
 	computation		c = prepare_computations(*i, r);
 	return (shade_hit(w, c));
 }
@@ -108,8 +108,8 @@ ray ray_for_pixel(camera cam, int px, int py)
 
     // Using the camera matrix, transform the canvas point and the origin
     matrix inv = inverse(cam.transform);
-    tuple pixel = matrix_multiply_tuple(inv, point(world_x, world_y, -1));
-    tuple origin = matrix_multiply_tuple(inv, point(0, 0, 0));
+    tuple pixel = matrix_multiply_tuple(inv, point(world_x, world_y, -1.0f));
+    tuple origin = matrix_multiply_tuple(inv, point(0.0f, 0.0f, 0.0f));
     tuple direction = normalize(sub_tuple(pixel, origin));
 
     return create_ray(origin, direction);

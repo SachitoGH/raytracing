@@ -1,6 +1,6 @@
 NAME        = raytracing
 
-SRC         = challenge/simple.c \
+SRC         = src/main.c \
 			  src/tuples.c \
 			  src/drawing.c \
 			  src/matrix.c	\
