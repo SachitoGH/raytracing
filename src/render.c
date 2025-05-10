@@ -107,7 +107,12 @@ tuple dir_for_pixel(camera *cam, matrix *inv, tuple *origin, int px, int py)
     float world_y = cam->half_height - yoffset;
 
     // Using the camera matrix, transform the canvas point and the origin
-	printf("%f,%f ", world_x, world_y);
+	if (px == 0 && py == 0)
+	{
+		printf("Camera Half:\t%f %f\n", cam->half_width, cam->half_height);
+		printf("Offset:\t\t%f %f\n", xoffset, yoffset);
+		printf("World:\t\t%f %f\n", world_x, world_y);
+	}
     tuple pixel = matrix_multiply_tuple(*inv, point(world_x, world_y, -1));
     return normalize(sub_tuple(pixel, *origin));
 }
@@ -121,7 +126,10 @@ canvas render(camera cam, world w)
 
 	printf("Rendering...\n");
 	r.origin = matrix_multiply_tuple(inv, point(0, 0, 0));
-	
+	printf("Width:\t\t%i\n", image.width);
+	printf("Height:\t\t%i\n", image.height);
+	printf("Aspect Ratio:\t%f\n", (float) image.width / image.height);
+	printf("Position:\t%.2f %.2f %.2f\n", r.origin.x, r.origin.y, r.origin.z);
 	for (int y = 0; y < cam.vsize; y++)
 	{
 		for (int x = 0; x < cam.hsize; x++)
@@ -129,7 +137,6 @@ canvas render(camera cam, world w)
 			r.direction = dir_for_pixel(&cam, &inv, &r.origin,x, y);
 			write_pixel(&image, x, y, color_at(w, r, x, y));
 		}
-		printf("\n");
 	}
 	printf("Time: %.6f\n", (clock() - start) / (float) CLOCKS_PER_SEC);
 	return image;
