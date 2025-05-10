@@ -208,7 +208,7 @@ tuple	reflect(tuple in, tuple normal);
 tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv, bool in_shadow);
 bool is_shadowed(world w, tuple p, light l);
 tuple		shade_hit(world w, computation c);
-tuple	color_at(world w, ray r);
+tuple	color_at(world w, ray r, int x, int y);
 computation	prepare_computations(intersection i, ray r);
 ray ray_for_pixel(camera cam, int px, int py);
 canvas render(camera cam, world w);

@@ -1,6 +1,7 @@
 #include "raytracing.h"
+#include "../minilibx/mlx.h"
 
-int first_scene(void)
+canvas first_scene(int width, int height, int fov)
 {
 	int	i = 0;
 	world w;
@@ -83,61 +84,35 @@ int first_scene(void)
 	w.objects[i++] = left;
 
 	// Camera
-	camera cam = create_camera(1000, 500, 60); // π/3 radians = 60 degrees
+	camera cam = create_camera(width, height, fov); // π/3 radians = 60 degrees
 	cam.transform = view_transform(point(0, 1.5, -5), point(0, 1, 0), vector(0, 1, 0));
 
 	// Render
 	// canvas image = low_render(cam, w, 10);
 	canvas image = render(cam, w);
-	canvas_to_ppm(&image, "scene.ppm");
-	destroy_canvas(&image);
 	destroy_world(&w);
-	return (0);
+	return (image);
 }
 
-void draw_clock_face(void)
-{
-    int width = 200;
-    int height = 200;
-    float radius = 90.0f;
-    canvas c = create_canvas(width, height);
-    tuple red = color(1.0f, 0.0f, 0.0f);
-
-    for (int hour = 0; hour < 12; ++hour)
-    {
-        float angle = (30) * hour; // 30 degrees per hour
-        matrix rot = rotation_z(angle); 
-        tuple pos = matrix_multiply_tuple(rot, point(0, 1, 0));
-
-        int x = (int)(width / 2 + pos.x * radius);
-        int y = (int)(height / 2 + pos.y * radius);
-
-        write_pixel(&c, x, y, red);
-    }
-
-    canvas_to_ppm(&c, "clock.ppm");
-    destroy_canvas(&c);
-}
-
-int test(void)
+canvas test(int	width, int height, int fov)
 {
 	int	i = 0;
 	world w;
-	w.object_count = 2;
+	w.object_count = 1;
 	w.objects = malloc(sizeof(shape) * w.object_count);
 	w.light_count = 2;
 	w.lights = malloc(sizeof(light)* w.light_count);
 	w.lights[0] = point_light(point(0, 0, 1), color(1, 0, 0));
 	w.lights[1] = point_light(point(0, 0, 1), color(0, 1, 0));
 
-	// Middle sphere
+	/*// Middle sphere
 	shape middle = create_sphere();
 	middle.transform = translation(0, 1, 7);
 	middle.material = create_material();
 	middle.material.color = color(1, 1, 1);
 	middle.material.diffuse = 0.7;
 	middle.material.specular = 0.3;
-	w.objects[i++] = middle;
+	w.objects[i++] = middle;*/
 
     // Middle sphere
 	shape middle2 = create_sphere();
@@ -149,20 +124,59 @@ int test(void)
 	w.objects[i++] = middle2;
 
 	// Camera
-	camera cam = create_camera(875, 715, 70); // π/3 radians = 60 degrees
+	camera cam = create_camera(width, height, fov); // π/3 radians = 60 degrees
 	cam.transform = view_transform(point(0, 0, 0), point(0, 0, 1), vector(0, 1, 0));
 
 	// Render
 	// canvas image = low_render(cam, w, 10);
 	canvas image = render(cam, w);
-	canvas_to_ppm(&image, "scene.ppm");
-	destroy_canvas(&image);
 	destroy_world(&w);
+	return (image);
+}
+
+void	*canvas_to_img(canvas *c, void *mlx)
+{
+	void	*img = mlx_new_image(mlx, c->width, c->height);
+	int		endian, bits_per_pixel, line_len;
+	char	*addr = mlx_get_data_addr(img, &bits_per_pixel, &line_len, &endian);
+
+	for (int i = 0; i < c->height; i++)
+	{
+		for (int j = 0; j < c->width; j++)
+		{
+			tuple col = pixel_at(c, j, i);
+            int r = to_ppm_component(col.x);
+            int g = to_ppm_component(col.y);
+            int b = to_ppm_component(col.z);
+			*(unsigned int *)(addr + (i * line_len
+				+ j * (bits_per_pixel / 8))) = (r << 16) | (g << 8) | b;
+		}
+	}
+	return (img);
+}
+
+int	end(int key, void *mlx)
+{
+	(void) key;
+	mlx_loop_end(mlx);
 	return (0);
 }
 
 int main(void)
 {
-    test();
+	int		width = 922;
+	int		height = 768;
+    canvas	c = test(width, height, 70);
+	void	*mlx = mlx_init();
+	void	*win = mlx_new_window(mlx, width, height, "MiniRT");
+	void	*img = canvas_to_img(&c, mlx);
+
+	destroy_canvas(&c);
+	mlx_put_image_to_window(mlx, win, img, 0, 0);
+	mlx_key_hook(win, end, mlx);
+	mlx_loop(mlx);
+	mlx_destroy_image(mlx, img);
+	mlx_destroy_window(mlx, win);
+	mlx_destroy_display(mlx);
     return 0;
 }

@@ -55,12 +55,15 @@ tuple		shade_hit(world w, computation c)
 	return (res);
 }
 
-tuple	color_at(world w, ray r)
+tuple	color_at(world w, ray r, int x, int y)
 {
+	(void) x;
+	(void) y;
 	intersections	xs = intersect_world(w, r);
 	intersection	*i = hit(&xs);
 	if (!i)
 		return (color(0, 0, 0));
+	//printf("Pixel: %i %i\n", x, y);
 	computation		c = prepare_computations(*i, r);
 	return (shade_hit(w, c));
 }
@@ -84,7 +87,8 @@ computation	prepare_computations(intersection i, ray r)
 	{
 		comps.inside = false;
 	}
-
+	/*printf("P: %f %f %f\n", comps.point.x, comps.point.y, comps.point.z);
+	printf("Normal: %f %f %f\n", comps.normalv.x, comps.normalv.y, comps.normalv.z);*/
 	// Avoid shadow acne by pushing the point slightly above the surface
 	tuple offset = mult_tuple_scalar(comps.normalv, 0.01f);
 	comps.over_point = add_tuple(comps.point, offset);
@@ -103,6 +107,7 @@ tuple dir_for_pixel(camera *cam, matrix *inv, tuple *origin, int px, int py)
     float world_y = cam->half_height - yoffset;
 
     // Using the camera matrix, transform the canvas point and the origin
+	printf("%f,%f ", world_x, world_y);
     tuple pixel = matrix_multiply_tuple(*inv, point(world_x, world_y, -1));
     return normalize(sub_tuple(pixel, *origin));
 }
@@ -116,13 +121,15 @@ canvas render(camera cam, world w)
 
 	printf("Rendering...\n");
 	r.origin = matrix_multiply_tuple(inv, point(0, 0, 0));
+	
 	for (int y = 0; y < cam.vsize; y++)
 	{
 		for (int x = 0; x < cam.hsize; x++)
 		{
 			r.direction = dir_for_pixel(&cam, &inv, &r.origin,x, y);
-			write_pixel(&image, x, y, color_at(w, r));
+			write_pixel(&image, x, y, color_at(w, r, x, y));
 		}
+		printf("\n");
 	}
 	printf("Time: %.6f\n", (clock() - start) / (float) CLOCKS_PER_SEC);
 	return image;
