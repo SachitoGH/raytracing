@@ -15,7 +15,6 @@ canvas first_scene(int width, int height, int fov)
 	// Floor
 	shape floor = create_sphere();
 	floor.transform = scaling(10, 0.01, 10);
-	floor.material = create_material();
 	floor.material.color = color(1, 0.9, 0.9);
 	floor.material.specular = 0;
 	w.objects[i++] = floor;
@@ -53,7 +52,6 @@ canvas first_scene(int width, int height, int fov)
 	// Middle sphere
 	shape middle = create_sphere();
 	middle.transform = translation(-0.5, 1, 0.5);
-	middle.material = create_material();
 	middle.material.color = color(0.1, 1, 0.5);
 	middle.material.diffuse = 0.7;
 	middle.material.specular = 0.3;
@@ -65,7 +63,6 @@ canvas first_scene(int width, int height, int fov)
 		translation(1.5, 0.5, -0.5),
 		scaling(0.5, 0.5, 0.5)
 	);
-	right.material = create_material();
 	right.material.color = color(0.5, 1, 0.1);
 	right.material.diffuse = 0.7;
 	right.material.specular = 0.3;
@@ -88,7 +85,6 @@ canvas first_scene(int width, int height, int fov)
 	cam.transform = view_transform(point(0, 1.5, -5), point(0, 1, 0), vector(0, 1, 0));
 
 	// Render
-	// canvas image = low_render(cam, w, 10);
 	canvas image = render(cam, w);
 	destroy_world(&w);
 	return (image);
@@ -108,7 +104,6 @@ canvas test(int	width, int height, int fov)
 	/*// Middle sphere
 	shape middle = create_sphere();
 	middle.transform = translation(0, 1, 7);
-	middle.material = create_material();
 	middle.material.color = color(1, 1, 1);
 	middle.material.diffuse = 0.7;
 	middle.material.specular = 0.3;
@@ -117,10 +112,9 @@ canvas test(int	width, int height, int fov)
     // Middle sphere
 	shape middle2 = create_sphere();
 	middle2.transform = translation(0, 0, 7);
-	middle2.material = create_material();
 	middle2.material.color = color(1, 1, 1);
 	middle2.material.diffuse = 0.7;
-	middle2.material.specular = 0.3;
+	middle2.material.specular = 0;
 	w.objects[i++] = middle2;
 
 	// Camera
@@ -128,7 +122,6 @@ canvas test(int	width, int height, int fov)
 	cam.transform = view_transform(point(0, 0, 0), point(0, 0, 1), vector(0, 1, 0));
 
 	// Render
-	// canvas image = low_render(cam, w, 10);
 	canvas image = render(cam, w);
 	destroy_world(&w);
 	return (image);

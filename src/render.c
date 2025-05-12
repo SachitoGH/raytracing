@@ -9,7 +9,9 @@ tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv, bool in_
 	tuple	lightv = normalize(sub_tuple(l.position, p));
 	tuple	ambient = mult_tuple_scalar(effective_color, m.ambient);
 	float	light_dot_normal = dot(lightv, normalv);
-
+	printf("Normal:\t\t%f %f %f\n", normalv.x, normalv.y, normalv.z);
+	printf("DP:\t\t%f\n", light_dot_normal);
+	printf("Light Dir:\t%f %f %f\n", lightv.x, lightv.y, lightv.z);
 	if (light_dot_normal < EPSILON || in_shadow)
 		return (ambient);
 	diffuse = mult_tuple_scalar(effective_color, m.diffuse * light_dot_normal);
@@ -33,7 +35,9 @@ bool is_shadowed(world w, tuple p, light l)
 
     // Create a ray from the point to the light
     ray r = create_ray(p, direction);
-
+	printf("Ray Origin:\t%f %f %f\n", r.origin.x, r.origin.y, r.origin.z);
+	printf("Ray Dir:\t%f %f %f\n", r.direction.x, r.direction.y, r.direction.z);
+	printf("Distance:\t%f\n", distance);
     // Check for intersections with objects in the world
     intersections xs = intersect_world(w, r);
 
@@ -51,7 +55,9 @@ tuple		shade_hit(world w, computation c)
 {
 	tuple	res = color(0, 0, 0);
 	for (int i = 0; i < w.light_count; i++)
-		res = add_tuple(res, lighting(c.object.material, w.lights[i], c.point, c.eyev, c.normalv, is_shadowed(w, c.over_point, w.lights[i])));
+		res = add_tuple(res,
+			lighting(c.object.material, w.lights[i], c.point, c.eyev, c.normalv,
+				is_shadowed(w, c.over_point, w.lights[i])));
 	return (res);
 }
 
@@ -63,7 +69,7 @@ tuple	color_at(world w, ray r, int x, int y)
 	intersection	*i = hit(&xs);
 	if (!i)
 		return (color(0, 0, 0));
-	//printf("Pixel: %i %i\n", x, y);
+	printf("Pixel:\t\t%i %i\n", x, y);
 	computation		c = prepare_computations(*i, r);
 	return (shade_hit(w, c));
 }
@@ -77,7 +83,7 @@ computation	prepare_computations(intersection i, ray r)
 	comps.point = position(r, comps.t);
 	comps.eyev = negate_tuple(r.direction);
 	comps.normalv = normal_at(&comps.object, comps.point);
-
+	printf("P:\t\t%f %f %f\n", comps.point.x, comps.point.y, comps.point.z);
 	if (dot(comps.normalv, comps.eyev) < EPSILON)
 	{
 		comps.inside = true;
@@ -109,6 +115,7 @@ tuple dir_for_pixel(camera *cam, matrix *inv, tuple *origin, int px, int py)
     // Using the camera matrix, transform the canvas point and the origin
 	if (px == 0 && py == 0)
 	{
+		printf("Pixel Size:\t%f\n", cam->pixel_size);
 		printf("Camera Half:\t%f %f\n", cam->half_width, cam->half_height);
 		printf("Offset:\t\t%f %f\n", xoffset, yoffset);
 		printf("World:\t\t%f %f\n", world_x, world_y);
@@ -130,16 +137,24 @@ canvas render(camera cam, world w)
 	printf("Height:\t\t%i\n", image.height);
 	printf("Aspect Ratio:\t%f\n", (float) image.width / image.height);
 	printf("Position:\t%.2f %.2f %.2f\n", r.origin.x, r.origin.y, r.origin.z);
-	for (int y = 0; y < cam.vsize; y++)
+	printf("Object:\t\t%.2f %.2f %.2f\n", w.objects[0].transform.data[0][3],
+		w.objects[0].transform.data[1][3], w.objects[0].transform.data[2][3]);
+	printf("Scale:\t\t%.2f %.2f %.2f\n", w.objects[0].transform.data[0][0],
+		w.objects[0].transform.data[1][1], w.objects[0].transform.data[2][2]);
+	printf("Light:\t\t%.2f %.2f %.2f\n", w.lights[0].position.x,
+		w.lights[0].position.y, w.lights[0].position.z);
+	/*for (int y = 0; y < cam.vsize; y++)
 	{
 		for (int x = 0; x < cam.hsize; x++)
 		{
 			r.direction = dir_for_pixel(&cam, &inv, &r.origin,x, y);
 			write_pixel(&image, x, y, color_at(w, r, x, y));
 		}
-	}
+	}*/
+	r.direction = dir_for_pixel(&cam, &inv, &r.origin, cam.hsize / 2, cam.vsize / 2);
+	write_pixel(&image, cam.hsize / 2, cam.vsize / 2, color_at(w, r, cam.hsize / 2, cam.vsize / 2));
 	printf("Time: %.6f\n", (clock() - start) / (float) CLOCKS_PER_SEC);
-	return image;
+	return (image);
 }
 /*
 canvas low_render(camera cam, world w, int step)
