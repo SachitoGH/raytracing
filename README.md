@@ -4,23 +4,17 @@
 ## Installation
 
 **Build from source:**
-1. Clone the chess repository:
+
 ```sh
-❯ git clone https://github.com/SachitoGH/raytracing
-```
-2. Navigate to the project directory:
-```sh
-❯ cd raytracing
-```
-3. Use the makefile:
-```sh
-❯ make
+git clone https://github.com/SachitoGH/raytracing
+cd raytracing
+make
 ```
 
 ## Usage
 
 ```sh
-❯ ./raytracing
+./raytracing
 ```
 Currently you can only change the scene rendered by modifying the code, some ppm file available in /ppm to see progress of the project
 
