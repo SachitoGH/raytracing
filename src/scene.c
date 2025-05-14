@@ -2,7 +2,9 @@
 
 world default_world(void)
 {
-    world w;
+    world	w;
+	matrix	temp1;
+	matrix	temp2;
     
     // Create a light source
     w.light_count = 1;
@@ -21,12 +23,16 @@ world default_world(void)
 	w.objects[0].material.shininess = 0.0f;
 	w.objects[0].material.ambient = 0.0f;
 	w.objects[0].material.reflective = 1.0f;
-	w.objects[0].transform = matrix_multiply(scaling(2, 2, 2), translation(-2.0f, 0.0f, 0.0f));
+	temp1 = scaling(2, 2, 2);
+	temp2 = translation(-2.0f, 0.0f, 0.0f);
+	w.objects[0].transform = matrix_multiply(&temp1, &temp2);
     
     // Second sphere: scaled, with a different material
     w.objects[1] = create_cube();
 	w.objects[1].material.color = color(1.0f, 0.6f, 0.0f);
-	w.objects[1].transform = matrix_multiply(translation(3.0f, 0.0f, -1.0f), rotation_y(45.0f));
+	temp1 = translation(3.0f, 0.0f, -1.0f);
+	temp2 = rotation_y(45.0f);
+	w.objects[1].transform = matrix_multiply(&temp1, &temp2);
 	// w.objects[1].material.pattern = checker_pattern(color(1, 1, 1), color(0, 0, 0));
     // w.objects[1].transform = scaling(0.5f, 0.5f, 0.5f);
 
@@ -34,21 +40,33 @@ world default_world(void)
 	w.objects[2].material.color = color(1.0f, 1.0f, 1.0f);
 	w.objects[2].material.reflective = 0.3f;
 	w.objects[2].material.pattern = checker_pattern(color(1, 1, 1), color(0, 0, 0));;
-	w.objects[2].transform = matrix_multiply(translation(0.0f, -1.0f, 0.0f), rotation_x(0.0f));
+	temp1 = translation(0.0f, -1.0f, 0.0f);
+	temp2 = rotation_x(0.0f);
+	w.objects[2].transform = matrix_multiply(&temp1, &temp2);
 
 	w.objects[3] = create_plane();
 	w.objects[3].material.color = color(1.0f, 1.0f, 1.0f);
 	w.objects[3].material.pattern = gradient_pattern(color(1, 0, 0), color(0, 0, 1));
 	w.objects[3].material.pattern.transform = scaling(20, 1, 1);
-	w.objects[3].transform = matrix_multiply(translation(10.0f, 0.0f, 3.0f), rotation_x(90.0f));
+	temp1 = translation(10.0f, 0.0f, 3.0f);
+	temp2 = rotation_x(90.0f);
+	w.objects[3].transform = matrix_multiply(&temp1, &temp2);
 	
     return w;
 }
 
 void	destroy_world(world *w)
 {
-	free(w->objects);
-	w->objects = NULL;
+	if (w->objects)
+	{
+		free(w->objects);
+		w->objects = NULL;
+	}
+	if (w->lights)
+	{
+		free(w->lights);
+		w->lights = NULL;
+	}
 }
 
 light	point_light(tuple position, tuple intensity)
@@ -76,16 +94,15 @@ void sort_intersections(intersections *xs)
 intersections intersect_world(world w, ray r)
 {
     intersections xs;
+	intersections temp;
     xs.count = 0;
 
     // Intersect the ray with each object in the world
     for (int i = 0; i < w.object_count; i++)
     {
-        intersections temp = intersect(&w.objects[i], r);
+        temp = intersect(&w.objects[i], r);
         for (int j = 0; j < temp.count; j++)
-        {
             xs.list[xs.count++] = temp.list[j];
-        }
     }
 
     // Sort the intersections by their 't' value
@@ -96,7 +113,8 @@ intersections intersect_world(world w, ray r)
 
 intersections intersect(shape *object, ray r)
 {
-	ray	local_ray = transform(r, inverse(object->transform));
+	matrix	temp = inverse(&object->transform);
+	ray	local_ray = transform(r, &temp);
     return (object->intersect(object, local_ray));
 }
 
@@ -121,7 +139,7 @@ matrix view_transform(tuple from, tuple to, tuple up)
 	orientation.data[2][2] = -forward.z;
 
 	matrix translation_matrix = translation(-from.x, -from.y, -from.z);
-	return (matrix_multiply(orientation, translation_matrix));
+	return (matrix_multiply(&orientation, &translation_matrix));
 }
 
 
@@ -130,7 +148,7 @@ camera	create_camera(int hsize, int vsize, float fov)
 	camera cam;
 	cam.hsize = hsize;
 	cam.vsize = vsize;
-	cam.fov = fov * (M_PI / 180.0f); //convert to rad
+	cam.fov = fov * DEG_RADIANTS; //convert to rad
 	cam.transform = matrix_identity(4);
 
 	float half_view = tanf(cam.fov / 2);

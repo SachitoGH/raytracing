@@ -1,7 +1,7 @@
 #include "raytracing.h"  // Replace with actual headers
 
 
-int main(void)
+canvas first_scene(int width, int height, int fov, int step)
 {
 	int	i = 0;
 	world w;
@@ -20,7 +20,7 @@ int main(void)
 	floor.material.specular = 0;
 	w.objects[i++] = floor;
 
-	// Left wall
+	/*// Left wall
 	shape left_wall = create_sphere();
 	left_wall.transform = matrix_multiply(
 		matrix_multiply(
@@ -48,7 +48,7 @@ int main(void)
 		scaling(10, 0.01, 10)
 	);
 	right_wall.material = floor.material;
-	w.objects[i++] = right_wall;
+	w.objects[i++] = right_wall;*/
 
 	// Middle sphere
 	shape middle = create_sphere();
@@ -59,7 +59,7 @@ int main(void)
 	middle.material.specular = 0.3;
 	w.objects[i++] = middle;
 
-	// Right sphere
+	/*// Right sphere
 	shape right = create_sphere();
 	right.transform = matrix_multiply(
 		translation(1.5, 0.5, -0.5),
@@ -81,17 +81,20 @@ int main(void)
 	left.material.color = color(1, 0.8, 0.1);
 	left.material.diffuse = 0.7;
 	left.material.specular = 0.3;
-	w.objects[i++] = left;
+	w.objects[i++] = left;*/
 
 	// Camera
-	camera cam = create_camera(1000, 500, 60); // π/3 radians = 60 degrees
+	camera cam = create_camera(width, height, fov); // π/3 radians = 60 degrees
 	cam.transform = view_transform(point(0, 1.5, -5), point(0, 1, 0), vector(0, 1, 0));
 
 	// Render
 	// canvas image = low_render(cam, w, 10);
-	canvas image = render(cam, w);
+	canvas	image;
+	if (step > 1)
+		image = low_render(cam, w, step);
+	else
+		image = render(cam, w);
 	canvas_to_ppm(&image, "scene.ppm");
-	destroy_canvas(&image);
 	destroy_world(&w);
-	return (0);
+	return (image);
 }

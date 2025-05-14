@@ -66,7 +66,10 @@ tuple	color_at(world w, ray r, int remaining)
 	intersection	*i = hit(&xs);
 	if (!i)
 		return (color(0.0f, 0.0f, 0.0f));
-	computation		c = prepare_computations(*i, r);
+	computation		c;
+	c.t = i->t;
+	c.object = i->object;
+	prepare_computations(&c, r);
 	return (shade_hit(w, c, remaining));
 }
 
@@ -81,28 +84,22 @@ tuple reflected_color(world w, computation comps, int remaining)
 }
 
 
-computation	prepare_computations(intersection i, ray r)
+void	prepare_computations(computation *comps, ray r)
 {
-	computation comps;
-
-	comps.t = i.t;
-	comps.object = i.object;
-	comps.point = position(r, comps.t);
-	comps.eyev = negate_tuple(r.direction);
-	comps.normalv = normal_at(&comps.object, comps.point);
-	comps.inside = dot(comps.normalv, comps.eyev) < EPSILON;
-	if (comps.inside)
-		comps.normalv = negate_tuple(comps.normalv);
+	comps->point = position(r, comps->t);
+	comps->eyev = negate_tuple(r.direction);
+	comps->normalv = normal_at(&comps->object, comps->point);
+	comps->inside = dot(comps->normalv, comps->eyev) < EPSILON;
+	if (comps->inside)
+		comps->normalv = negate_tuple(comps->normalv);
 
 	// Avoid shadow acne by pushing the point slightly above the surface
-	tuple offset = mult_tuple_scalar(comps.normalv, 0.01f);
-	comps.over_point = add_tuple(comps.point, offset);
-	comps.reflectv = reflect(r.direction, comps.normalv);
-
-	return (comps);
+	tuple offset = mult_tuple_scalar(comps->normalv, 0.01f);
+	comps->over_point = add_tuple(comps->point, offset);
+	comps->reflectv = reflect(r.direction, comps->normalv);
 }
 
-tuple ray_for_pixel(camera cam, matrix inv, tuple origin, int px, int py)
+tuple ray_for_pixel(camera cam, matrix *inv, tuple origin, int px, int py)
 {
     // Offset from the edge of the canvas to the pixel center
     float xoffset = (px + 0.5f) * cam.pixel_size;
@@ -119,37 +116,51 @@ tuple ray_for_pixel(camera cam, matrix inv, tuple origin, int px, int py)
     return direction;
 }
 
+void	printf_time(clock_t start, clock_t end)
+{
+	clock_t time;
+	
+	time = end - start;
+	int minutes = (int)(time / (CLOCKS_PER_SEC * 60.0f));
+    int seconds = (int)(time / ((float) CLOCKS_PER_SEC)) % 60;
+    int milliseconds = (int)((time % CLOCKS_PER_SEC) * 1000 / CLOCKS_PER_SEC);
+    printf("Time: %im %02is %ims\n", minutes, seconds, milliseconds);
+}
+
 canvas render(camera cam, world w)
 {
 	canvas	image = create_canvas(cam.hsize, cam.vsize);
-	matrix	inv = inverse(cam.transform);
+	matrix	inv = inverse(&cam.transform);
 	ray		r;
+	clock_t	start = clock();
 
-	r.origin = matrix_multiply_tuple(inv, point(0.0f, 0.0f, 0.0f));
+	r.origin = matrix_multiply_tuple(&inv, point(0.0f, 0.0f, 0.0f));
 	for (int y = 0; y < cam.vsize; y++)
 	{
 		for (int x = 0; x < cam.hsize; x++)
 		{
-			r.direction = ray_for_pixel(cam, inv, r.origin, x, y);
+			r.direction = ray_for_pixel(cam, &inv, r.origin, x, y);
 			write_pixel(&image, x, y, color_at(w, r, 4));
 		}
 	}
+	printf_time(start, clock());
 	return image;
 }
 
 canvas low_render(camera cam, world w, int step)
 {
-    canvas image = create_canvas(cam.hsize, cam.vsize);
-	matrix inv = inverse(cam.transform);
+    canvas	image = create_canvas(cam.hsize, cam.vsize);
+	matrix	inv = inverse(&cam.transform);
 	ray		r;
+	clock_t	start = clock();
 
-	r.origin = matrix_multiply_tuple(inv, point(0.0f, 0.0f, 0.0f));
+	r.origin = matrix_multiply_tuple(&inv, point(0.0f, 0.0f, 0.0f));
     // Render every 'step'th pixel
     for (int y = 0; y < cam.vsize; y += step)
     {
         for (int x = 0; x < cam.hsize; x += step)
         {
-            r.direction = ray_for_pixel(cam, inv, r.origin, x, y);
+            r.direction = ray_for_pixel(cam, &inv, r.origin, x, y);
             tuple color_at_pixel = color_at(w, r, 4);
 
             // Write the computed color to a block of pixels
@@ -162,6 +173,6 @@ canvas low_render(camera cam, world w, int step)
             }
         }
     }
-
+	printf_time(start, clock());
     return image;
 }

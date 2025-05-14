@@ -1,12 +1,16 @@
 #ifndef raytracing
-#define raytracing
+# define raytracing
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <math.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <stdbool.h>
+# include <math.h>
+# include "../minilibx/mlx.h"
+# include <time.h>
 
-#define EPSILON 0.00001f
+# define EPSILON 0.00001f
+# define ESC_KEY 65307
+# define DEG_RADIANTS 0.017453293
 
 // struct
 
@@ -48,13 +52,11 @@ typedef struct pattern pattern;
 
 struct pattern
 {
-	pattern_type	type;
 	matrix			transform;
-
 	tuple			a;  // Color A
 	tuple			b;  // Color B
-
-	tuple	(*pattern_at)(pattern *self, tuple point);
+	tuple			(*pattern_at)(pattern *self, tuple point);
+	pattern_type	type;
 };
 
 typedef struct
@@ -66,11 +68,11 @@ typedef struct
 typedef struct
 {
 	tuple	color;
+	pattern	pattern;
 	float	ambient;
 	float	diffuse;
 	float	specular;
 	float	shininess;
-	pattern	pattern;
 	float	reflective;
 }	material;
 
@@ -94,19 +96,19 @@ typedef struct s_intersections intersections;
 typedef struct s_shape
 {
     shape_type type;
-    int id;
     matrix transform;
     material material;
 
     // Use function pointers with forward-declared intersection type
     intersections (*intersect)(shape *self, ray r);
     tuple (*normal_at)(shape *self, tuple world_point);
+	int id;
 } shape;
 
 typedef struct s_intersection
 {
-    float t;
     shape object;
+	float t;
 } intersection;
 
 #define MAX_INTERSECTIONS 50
@@ -127,22 +129,22 @@ typedef struct
 
 typedef struct s_computation
 {
-	float	t;
 	shape	object;     // the intersected object
 	tuple	point;      // the point of intersection
 	tuple	eyev;       // the eye (view) vector
 	tuple	normalv;    // the normal vector at the point
 	tuple	over_point;
-	bool	inside;     // true if the intersection occurs inside the object
 	tuple	reflectv;
+	float	t;
+	bool	inside;     // true if the intersection occurs inside the object
 }	computation;
 
 typedef	struct
 {
+	matrix transform;
 	int hsize;
 	int vsize;
 	float fov;
-	matrix transform;
 	float pixel_size;
 	float half_width;
 	float half_height;
@@ -184,20 +186,20 @@ canvas	upscale_canvas(canvas *src, int scale_x, int scale_y);
 
 // matrix.c
 
-void print_matrix(matrix m);
-tuple matrix_multiply_tuple(matrix m, tuple t);
-matrix matrix_multiply(matrix a, matrix b);
-int matrix_equal(matrix a, matrix b);
+void print_matrix(matrix *m);
+tuple matrix_multiply_tuple(matrix *m, tuple t);
+matrix matrix_multiply(matrix *a, matrix *b);
+int matrix_equal(matrix *a, matrix *b);
 matrix matrix_zero(int size);
 matrix matrix_identity(int size);
-matrix matrix_transpose(matrix m);
-matrix inverse(matrix m);
-float minor(matrix m, int row, int col);
-int is_invertible(matrix m);
-float cofactor(matrix m, int row, int col);
-matrix submatrix(matrix m, int row, int col);
-float determinant_2x2(matrix m);
-float determinant(matrix m);
+matrix matrix_transpose(matrix *m);
+matrix inverse(matrix *m);
+float minor(matrix *m, int row, int col);
+int is_invertible(matrix *m);
+float cofactor(matrix *m, int row, int col);
+matrix submatrix(matrix *m, int row, int col);
+float determinant_2x2(matrix *m);
+float determinant(matrix *m);
 
 
 //transformation.c
@@ -226,7 +228,7 @@ tuple	position(ray r, float t);
 intersection	create_intersection(float t, shape s);
 intersections	create_intersections(intersection i1, intersection i2);
 intersection* hit(intersections* xs);
-ray	transform(ray r, matrix m);
+ray	transform(ray r, matrix *m);
 tuple	normal_at(shape *s, tuple world_point);
 tuple	reflect(tuple in, tuple normal);
 
@@ -236,8 +238,8 @@ tuple	lighting(material m, shape object, light l, tuple p, tuple eyev, tuple nor
 bool is_shadowed(world w, tuple p, light l);
 tuple		shade_hit(world w, computation c, int remaining);
 tuple	color_at(world w, ray r, int remaining);
-computation	prepare_computations(intersection i, ray r);
-tuple ray_for_pixel(camera cam, matrix inv, tuple origin, int px, int py);
+void	prepare_computations(computation *c, ray r);
+tuple ray_for_pixel(camera cam, matrix *inv, tuple origin, int px, int py);
 canvas render(camera cam, world w);
 canvas low_render(camera cam, world w, int step);
 tuple reflected_color(world w, computation comps, int remaining);
@@ -272,7 +274,10 @@ tuple	ring_at(pattern *p, tuple point);
 pattern	checker_pattern(tuple a, tuple b);
 tuple	checker_at(pattern *p, tuple point);
 
+//	scenes
 
-
+canvas simple(int width, int height, int fov, int step);
+canvas test(int	width, int height, int fov, int step);
+canvas first_scene(int	width, int height, int fov, int step);
 
 #endif

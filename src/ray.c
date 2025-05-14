@@ -12,7 +12,7 @@ tuple	position(ray r, float t)
 
 intersection	create_intersection(float t, shape s)
 {
-	return ((intersection){t, s});
+	return ((intersection){s, t});
 }
 
 intersections	create_intersections(intersection i1, intersection i2)
@@ -36,7 +36,7 @@ intersection* hit(intersections* xs)
 	return (NULL);
 }
 
-ray	transform(ray r, matrix m)
+ray	transform(ray r, matrix *m)
 {
 	r.origin = matrix_multiply_tuple(m, r.origin);
 	r.direction = matrix_multiply_tuple(m, r.direction);
@@ -46,14 +46,15 @@ ray	transform(ray r, matrix m)
 tuple normal_at(shape *s, tuple world_point)
 {
     // Transform the world point to object coordinates
-    matrix inv = inverse(s->transform);
-    tuple object_point = matrix_multiply_tuple(inv, world_point);
+    matrix inv = inverse(&s->transform);
+    tuple object_point = matrix_multiply_tuple(&inv, world_point);
 
     // Get the local normal from the shape's specific normal_at function
     tuple object_normal = s->normal_at(s, object_point);
 
     // Transform the normal to world coordinates using inverse transpose
-    tuple world_normal = matrix_multiply_tuple(matrix_transpose(inv), object_normal);
+	matrix transpose = matrix_transpose(&inv);
+    tuple world_normal = matrix_multiply_tuple(&transpose, object_normal);
 
     // Ensure it's a vector
     world_normal.w = 0;

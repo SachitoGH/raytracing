@@ -33,7 +33,7 @@ matrix scaling(float sx, float sy, float sz)
 matrix rotation_x(float angle)
 {
     matrix result = matrix_identity(4);
-    float rad = angle * M_PI / 180.0f; // Convert angle to radians
+    float rad = angle * DEG_RADIANTS; // Convert angle to radians
     result.data[1][1] = cosf(rad);
     result.data[1][2] = -sinf(rad);
     result.data[2][1] = sinf(rad);
@@ -45,7 +45,7 @@ matrix rotation_x(float angle)
 matrix rotation_y(float angle)
 {
     matrix result = matrix_identity(4);
-    float rad = angle * M_PI / 180.0f; // Convert angle to radians
+    float rad = angle * DEG_RADIANTS; // Convert angle to radians
     result.data[0][0] = cosf(rad);
     result.data[0][2] = sinf(rad);
     result.data[2][0] = -sinf(rad);
@@ -57,7 +57,7 @@ matrix rotation_y(float angle)
 matrix rotation_z(float angle)
 {
     matrix result = matrix_identity(4);
-    float rad = angle * M_PI / 180.0f; // Convert angle to radians
+    float rad = angle * DEG_RADIANTS; // Convert angle to radians
     result.data[0][0] = cosf(rad);
     result.data[0][1] = -sinf(rad);
     result.data[1][0] = sinf(rad);

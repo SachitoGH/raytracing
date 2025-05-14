@@ -86,7 +86,11 @@ tuple	checker_at(pattern *p, tuple point)
 
 tuple	pattern_at_object(pattern *p, shape s, tuple world_point)
 {
-	tuple object_point = matrix_multiply_tuple(inverse(s.transform), world_point);
-	tuple pattern_point = matrix_multiply_tuple(inverse(p->transform), object_point);
+	matrix	temp;
+
+	temp = inverse(&s.transform);
+	tuple object_point = matrix_multiply_tuple(&temp, world_point);
+	temp = inverse(&p->transform);
+	tuple pattern_point = matrix_multiply_tuple(&temp, object_point);
 	return (p->pattern_at(p, pattern_point));
 }
