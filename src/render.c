@@ -79,14 +79,15 @@ computation	prepare_computations(intersection i, ray r)
 	comps.t = i.t;
 	comps.object = i.object;
 	comps.point = position(r, comps.t);
+	comps.point = (tuple) {0.003647f, -0.003647f, 2.000013f, 1.0f};
 	comps.eyev = negate_tuple(r.direction);
 	comps.normalv = normal_at(&comps.object, comps.point);
 	//printf("P:\t\t%f %f %f\n", comps.point.x, comps.point.y, comps.point.z);
 	comps.inside = dot(comps.normalv, comps.eyev) < EPSILON;
 	if (comps.inside)
 		comps.normalv = negate_tuple(comps.normalv);
-	/*printf("P: %f %f %f\n", comps.point.x, comps.point.y, comps.point.z);
-	printf("Normal: %f %f %f\n", comps.normalv.x, comps.normalv.y, comps.normalv.z);*/
+	printf("P: %f %f %f\n", comps.point.x, comps.point.y, comps.point.z);
+	printf("Normal: %f %f %f\n", comps.normalv.x, comps.normalv.y, comps.normalv.z);
 	// Avoid shadow acne by pushing the point slightly above the surface
 	tuple offset = mult_tuple_scalar(comps.normalv, 0.01f);
 	comps.over_point = add_tuple(comps.point, offset);
