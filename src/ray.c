@@ -29,13 +29,9 @@ intersection* hit(intersections* xs)
 	intersection* hit = NULL;
 	for (int i = 0; i < xs->count; ++i)
 	{
-		if (xs->list[i].t > EPSILON)
-		{
-			if (hit == NULL || xs->list[i].t < hit->t)
-			{
-				hit = &xs->list[i];
-			}
-		}
+		if (xs->list[i].t > EPSILON
+			&& (hit == NULL || xs->list[i].t < hit->t))
+			hit = &xs->list[i];
 	}
 	return (hit);
 }

@@ -4,18 +4,21 @@
 tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv, bool in_shadow)
 {
 	tuple	diffuse;
-	tuple	specular;
+	//tuple	specular;
+	(void) eyev;
 	tuple	effective_color = mult_tuple(m.color, l.intensity);
 	tuple	lightv = normalize(sub_tuple(l.position, p));
 	tuple	ambient = mult_tuple_scalar(effective_color, m.ambient);
 	float	light_dot_normal = dot(lightv, normalv);
+	printf("P:\t\t%f %f %f\n", p.x, p.y, p.z);
 	printf("Normal:\t\t%f %f %f\n", normalv.x, normalv.y, normalv.z);
 	printf("DP:\t\t%f\n", light_dot_normal);
 	printf("Light Dir:\t%f %f %f\n", lightv.x, lightv.y, lightv.z);
 	if (light_dot_normal < EPSILON || in_shadow)
 		return (ambient);
 	diffuse = mult_tuple_scalar(effective_color, m.diffuse * light_dot_normal);
-	tuple	reflectv = reflect(negate_tuple(lightv), normalv);
+	return (add_tuple(ambient, diffuse));
+	/*tuple	reflectv = reflect(negate_tuple(lightv), normalv);
 	float	reflect_dot_eye = dot(reflectv, eyev);
 	if (reflect_dot_eye <= EPSILON)
 		specular = color(0, 0, 0);
@@ -24,7 +27,7 @@ tuple	lighting(material m, light l, tuple p, tuple eyev, tuple normalv, bool in_
 		float factor = pow(reflect_dot_eye, m.shininess);
 		specular = mult_tuple_scalar(mult_tuple_scalar(l.intensity, m.specular), factor);
 	}
-	return (add_tuple(add_tuple(ambient, diffuse), specular));
+	return (add_tuple(add_tuple(ambient, diffuse), specular));*/
 }
 
 bool is_shadowed(world w, tuple p, light l)
@@ -35,19 +38,15 @@ bool is_shadowed(world w, tuple p, light l)
 
     // Create a ray from the point to the light
     ray r = create_ray(p, direction);
-	printf("Ray Origin:\t%f %f %f\n", r.origin.x, r.origin.y, r.origin.z);
+	/*printf("Ray Origin:\t%f %f %f\n", r.origin.x, r.origin.y, r.origin.z);
 	printf("Ray Dir:\t%f %f %f\n", r.direction.x, r.direction.y, r.direction.z);
-	printf("Distance:\t%f\n", distance);
+	printf("Distance:\t%f\n", distance);*/
     // Check for intersections with objects in the world
     intersections xs = intersect_world(w, r);
 
     // If there's an intersection and it's closer than the light source, the point is in shadow
     intersection* first = hit(&xs);
-    if (first != NULL && first->t < distance)
-    {
-        return true; // Point is in shadow for this light
-    }
-    return false; // No shadow
+	return (first != NULL && first->t < distance);
 }
 
 
@@ -66,11 +65,10 @@ tuple	color_at(world w, ray r, int x, int y)
 	(void) x;
 	(void) y;
 	intersections	xs = intersect_world(w, r);
-	intersection	*i = hit(&xs);
-	if (!i)
+	if (xs.list[0].t < EPSILON)
 		return (color(0, 0, 0));
-	printf("Pixel:\t\t%i %i\n", x, y);
-	computation		c = prepare_computations(*i, r);
+	//printf("Pixel:\t\t%i %i\n", x, y);
+	computation		c = prepare_computations(xs.list[0], r);
 	return (shade_hit(w, c));
 }
 
@@ -83,16 +81,10 @@ computation	prepare_computations(intersection i, ray r)
 	comps.point = position(r, comps.t);
 	comps.eyev = negate_tuple(r.direction);
 	comps.normalv = normal_at(&comps.object, comps.point);
-	printf("P:\t\t%f %f %f\n", comps.point.x, comps.point.y, comps.point.z);
-	if (dot(comps.normalv, comps.eyev) < EPSILON)
-	{
-		comps.inside = true;
+	//printf("P:\t\t%f %f %f\n", comps.point.x, comps.point.y, comps.point.z);
+	comps.inside = dot(comps.normalv, comps.eyev) < EPSILON;
+	if (comps.inside)
 		comps.normalv = negate_tuple(comps.normalv);
-	}
-	else
-	{
-		comps.inside = false;
-	}
 	/*printf("P: %f %f %f\n", comps.point.x, comps.point.y, comps.point.z);
 	printf("Normal: %f %f %f\n", comps.normalv.x, comps.normalv.y, comps.normalv.z);*/
 	// Avoid shadow acne by pushing the point slightly above the surface
@@ -113,13 +105,13 @@ tuple dir_for_pixel(camera *cam, matrix *inv, tuple *origin, int px, int py)
     float world_y = cam->half_height - yoffset;
 
     // Using the camera matrix, transform the canvas point and the origin
-	if (px == 0 && py == 0)
+	/*if (px == 0 && py == 0)
 	{
 		printf("Pixel Size:\t%f\n", cam->pixel_size);
 		printf("Camera Half:\t%f %f\n", cam->half_width, cam->half_height);
 		printf("Offset:\t\t%f %f\n", xoffset, yoffset);
 		printf("World:\t\t%f %f\n", world_x, world_y);
-	}
+	}*/
     tuple pixel = matrix_multiply_tuple(*inv, point(world_x, world_y, -1));
     return normalize(sub_tuple(pixel, *origin));
 }

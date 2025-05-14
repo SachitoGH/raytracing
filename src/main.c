@@ -98,8 +98,8 @@ canvas test(int	width, int height, int fov)
 	w.objects = malloc(sizeof(shape) * w.object_count);
 	w.light_count = 2;
 	w.lights = malloc(sizeof(light)* w.light_count);
-	w.lights[0] = point_light(point(0, 0, 1), color(1, 0, 0));
-	w.lights[1] = point_light(point(0, 0, 1), color(0, 1, 0));
+	w.lights[0] = point_light(point(3, 0, 3), color(1, 0, 0));
+	w.lights[1] = point_light(point(-3, 0, 3), color(0, 1, 0));
 
 	/*// Middle sphere
 	shape middle = create_sphere();
@@ -171,5 +171,6 @@ int main(void)
 	mlx_destroy_image(mlx, img);
 	mlx_destroy_window(mlx, win);
 	mlx_destroy_display(mlx);
+	free(mlx);
     return 0;
 }

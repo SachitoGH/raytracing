@@ -30,6 +30,11 @@ void	destroy_world(world *w)
 {
 	free(w->objects);
 	w->objects = NULL;
+	if (w->lights)
+	{
+		free(w->lights);
+		w->lights = NULL;
+	}
 }
 
 light	point_light(tuple position, tuple intensity)
