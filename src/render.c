@@ -5,16 +5,18 @@ tuple	lighting(material m, shape object, light l, tuple p, tuple eyev, tuple nor
 	tuple	diffuse;
 	tuple	specular;
 	tuple	col;
+
 	if (m.pattern.type != UNSET)
 		col = pattern_at_object(&m.pattern, object, p);
 	else
 		col = m.color;
 	tuple	effective_color = mult_tuple(col, l.intensity);
-	tuple	lightv = normalize(sub_tuple(l.position, p));
 	tuple	ambient = mult_tuple_scalar(effective_color, m.ambient);
+	if (in_shadow)
+		return (ambient);
+	tuple	lightv = normalize(sub_tuple(l.position, p));
 	float	light_dot_normal = dot(lightv, normalv);
-
-	if (light_dot_normal < EPSILON || in_shadow)
+	if (light_dot_normal < EPSILON)
 		return (ambient);
 	diffuse = mult_tuple_scalar(effective_color, m.diffuse * light_dot_normal);
 	tuple	reflectv = reflect(negate_tuple(lightv), normalv);
@@ -43,11 +45,7 @@ bool is_shadowed(world w, tuple p, light l)
 
     // If there's an intersection and it's closer than the light source, the point is in shadow
     intersection* first = hit(&xs);
-    if (first != NULL && first->t < distance)
-    {
-        return true; // Point is in shadow for this light
-    }
-    return false; // No shadow
+    return (first != NULL && first->t < distance); // True: In shadow
 }
 
 
@@ -92,16 +90,9 @@ computation	prepare_computations(intersection i, ray r)
 	comps.point = position(r, comps.t);
 	comps.eyev = negate_tuple(r.direction);
 	comps.normalv = normal_at(&comps.object, comps.point);
-
-	if (dot(comps.normalv, comps.eyev) < EPSILON)
-	{
-		comps.inside = true;
+	comps.inside = dot(comps.normalv, comps.eyev) < EPSILON;
+	if (comps.inside)
 		comps.normalv = negate_tuple(comps.normalv);
-	}
-	else
-	{
-		comps.inside = false;
-	}
 
 	// Avoid shadow acne by pushing the point slightly above the surface
 	tuple offset = mult_tuple_scalar(comps.normalv, 0.01f);
@@ -111,7 +102,7 @@ computation	prepare_computations(intersection i, ray r)
 	return (comps);
 }
 
-ray ray_for_pixel(camera cam, int px, int py)
+tuple ray_for_pixel(camera cam, matrix inv, tuple origin, int px, int py)
 {
     // Offset from the edge of the canvas to the pixel center
     float xoffset = (px + 0.5f) * cam.pixel_size;
@@ -122,25 +113,25 @@ ray ray_for_pixel(camera cam, int px, int py)
     float world_y = cam.half_height - yoffset;
 
     // Using the camera matrix, transform the canvas point and the origin
-    matrix inv = inverse(cam.transform);
     tuple pixel = matrix_multiply_tuple(inv, point(world_x, world_y, -1.0f));
-    tuple origin = matrix_multiply_tuple(inv, point(0.0f, 0.0f, 0.0f));
     tuple direction = normalize(sub_tuple(pixel, origin));
 
-    return create_ray(origin, direction);
+    return direction;
 }
 
 canvas render(camera cam, world w)
 {
-	canvas image = create_canvas(cam.hsize, cam.vsize);
+	canvas	image = create_canvas(cam.hsize, cam.vsize);
+	matrix	inv = inverse(cam.transform);
+	ray		r;
 
+	r.origin = matrix_multiply_tuple(inv, point(0.0f, 0.0f, 0.0f));
 	for (int y = 0; y < cam.vsize; y++)
 	{
 		for (int x = 0; x < cam.hsize; x++)
 		{
-			ray r = ray_for_pixel(cam, x, y);
-			tuple color_at_pixel = color_at(w, r, 4);
-			write_pixel(&image, x, y, color_at_pixel);
+			r.direction = ray_for_pixel(cam, inv, r.origin, x, y);
+			write_pixel(&image, x, y, color_at(w, r, 4));
 		}
 	}
 	return image;
@@ -149,13 +140,16 @@ canvas render(camera cam, world w)
 canvas low_render(camera cam, world w, int step)
 {
     canvas image = create_canvas(cam.hsize, cam.vsize);
+	matrix inv = inverse(cam.transform);
+	ray		r;
 
+	r.origin = matrix_multiply_tuple(inv, point(0.0f, 0.0f, 0.0f));
     // Render every 'step'th pixel
     for (int y = 0; y < cam.vsize; y += step)
     {
         for (int x = 0; x < cam.hsize; x += step)
         {
-            ray r = ray_for_pixel(cam, x, y);
+            r.direction = ray_for_pixel(cam, inv, r.origin, x, y);
             tuple color_at_pixel = color_at(w, r, 4);
 
             // Write the computed color to a block of pixels

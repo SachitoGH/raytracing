@@ -109,7 +109,7 @@ typedef struct s_intersection
     shape object;
 } intersection;
 
-#define MAX_INTERSECTIONS 100
+#define MAX_INTERSECTIONS 50
 
 typedef struct s_intersections
 {
@@ -237,7 +237,7 @@ bool is_shadowed(world w, tuple p, light l);
 tuple		shade_hit(world w, computation c, int remaining);
 tuple	color_at(world w, ray r, int remaining);
 computation	prepare_computations(intersection i, ray r);
-ray ray_for_pixel(camera cam, int px, int py);
+tuple ray_for_pixel(camera cam, matrix inv, tuple origin, int px, int py);
 canvas render(camera cam, world w);
 canvas low_render(camera cam, world w, int step);
 tuple reflected_color(world w, computation comps, int remaining);

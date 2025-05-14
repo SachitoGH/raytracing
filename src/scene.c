@@ -15,10 +15,13 @@ world default_world(void)
     
     // First sphere: default material and transformation
     w.objects[0] = create_sphere(); // Using the create_sphere function from your previous code
-    w.objects[0].material.color = color(0.8f, 1.0f, 0.6f); // Example color
-    w.objects[0].material.diffuse = 0.7f;
-	w.objects[0].material.specular = 0.2f;
-	w.objects[0].transform = translation(-2.0f, 0.0f, 0.0f);
+    w.objects[0].material.diffuse = 0.0f;
+	w.objects[0].material.diffuse = 0.0f;
+	w.objects[0].material.specular = 0.0f;
+	w.objects[0].material.shininess = 0.0f;
+	w.objects[0].material.ambient = 0.0f;
+	w.objects[0].material.reflective = 1.0f;
+	w.objects[0].transform = matrix_multiply(scaling(2, 2, 2), translation(-2.0f, 0.0f, 0.0f));
     
     // Second sphere: scaled, with a different material
     w.objects[1] = create_cube();
