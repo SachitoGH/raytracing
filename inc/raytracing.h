@@ -85,9 +85,18 @@ typedef struct
 typedef enum {
 	SHAPE_SPHERE,
 	SHAPE_PLANE,
-	SHAPE_CUBE
-	// Add more types as needed
+	SHAPE_CUBE,
+	SHAPE_CYLINDER
+	//..
 } shape_type;
+
+
+typedef struct
+{
+	float minimum;
+	float maximum;
+	bool closed;
+} cylinder_props;
 
 // Forward declaration of shape and intersections
 typedef struct s_shape shape;
@@ -103,6 +112,11 @@ typedef struct s_shape
     intersections (*intersect)(shape *self, ray r);
     tuple (*normal_at)(shape *self, tuple world_point);
 	int id;
+	union
+	{
+		cylinder_props cylinder;
+		//maybe other later
+	};
 } shape;
 
 typedef struct s_intersection
@@ -261,6 +275,12 @@ tuple	plane_normal_at(shape *p, tuple world_point);
 shape create_cube(void);
 tuple cube_normal_at(shape *cube, tuple object_point);
 intersections cube_intersect(shape *cube, ray local_ray);
+
+// cylinder.c
+shape create_cylinder(void);
+intersections cylinder_intersect(shape *s, ray local_ray);
+tuple cylinder_normal_at(shape *s, tuple object_point);
+
 
 // patterns.c
 

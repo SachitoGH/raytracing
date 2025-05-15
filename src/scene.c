@@ -11,23 +11,17 @@ world default_world(void)
 	w.lights = malloc(sizeof(light) * w.light_count);
 	w.lights[0] = point_light(point(-10.0f, 10.0f, -10.0f), color(1.0f, 1.0f, 1.0f));
     
-    // Allocate memory for 2 spheres and a 3 planes
-    w.object_count = 4;
+    // Allocate memory for 1 sphere, 1 cube, 1 cylinder and a 3 planes
+    w.object_count = 5;
     w.objects = malloc(sizeof(shape) * w.object_count);
     
-    // First sphere: default material and transformation
+    //  sphere
     w.objects[0] = create_sphere(); // Using the create_sphere function from your previous code
-    w.objects[0].material.diffuse = 0.0f;
-	w.objects[0].material.diffuse = 0.0f;
-	w.objects[0].material.specular = 0.0f;
-	w.objects[0].material.shininess = 0.0f;
-	w.objects[0].material.ambient = 0.0f;
-	w.objects[0].material.reflective = 1.0f;
-	temp1 = scaling(2, 2, 2);
+	temp1 = scaling(1, 1, 1);
 	temp2 = translation(-2.0f, 0.0f, 0.0f);
 	w.objects[0].transform = matrix_multiply(&temp1, &temp2);
     
-    // Second sphere: scaled, with a different material
+    // cube
     w.objects[1] = create_cube();
 	w.objects[1].material.color = color(1.0f, 0.6f, 0.0f);
 	temp1 = translation(3.0f, 0.0f, -1.0f);
@@ -36,21 +30,28 @@ world default_world(void)
 	// w.objects[1].material.pattern = checker_pattern(color(1, 1, 1), color(0, 0, 0));
     // w.objects[1].transform = scaling(0.5f, 0.5f, 0.5f);
 
-	w.objects[2] = create_plane();
-	w.objects[2].material.color = color(1.0f, 1.0f, 1.0f);
-	w.objects[2].material.reflective = 0.3f;
-	w.objects[2].material.pattern = checker_pattern(color(1, 1, 1), color(0, 0, 0));;
-	temp1 = translation(0.0f, -1.0f, 0.0f);
-	temp2 = rotation_x(0.0f);
-	w.objects[2].transform = matrix_multiply(&temp1, &temp2);
+	// cylinder
+	w.objects[2] = create_cylinder();
+	w.objects[2].material.color = color(0.6f, 1.0f, 0.0f);
+	w.objects[2].transform = translation(-3.5f, 0.0f, -3.0f);
 
+	//plane floor
 	w.objects[3] = create_plane();
 	w.objects[3].material.color = color(1.0f, 1.0f, 1.0f);
-	w.objects[3].material.pattern = gradient_pattern(color(1, 0, 0), color(0, 0, 1));
-	w.objects[3].material.pattern.transform = scaling(20, 1, 1);
+	w.objects[3].material.reflective = 0.3f;
+	w.objects[3].material.pattern = checker_pattern(color(1, 1, 1), color(0, 0, 0));;
+	temp1 = translation(0.0f, -1.0f, 0.0f);
+	temp2 = rotation_x(0.0f);
+	w.objects[3].transform = matrix_multiply(&temp1, &temp2);
+
+	//plane front wall
+	w.objects[4] = create_plane();
+	w.objects[4].material.color = color(1.0f, 1.0f, 1.0f);
+	w.objects[4].material.pattern = gradient_pattern(color(1, 0, 0), color(0, 0, 1));
+	w.objects[4].material.pattern.transform = scaling(20, 1, 1);
 	temp1 = translation(10.0f, 0.0f, 3.0f);
 	temp2 = rotation_x(90.0f);
-	w.objects[3].transform = matrix_multiply(&temp1, &temp2);
+	w.objects[4].transform = matrix_multiply(&temp1, &temp2);
 	
     return w;
 }
