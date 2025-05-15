@@ -73,12 +73,12 @@ tuple cylinder_normal_at(shape *s, tuple object_point)
 {
 	float dist = object_point.x * object_point.x + object_point.z * object_point.z;
 
-	// Check if it's the side (caps not handled yet)
+	// Check if it's the side 
 	if (dist < 1 && object_point.y >= s->cylinder.maximum - EPSILON)
-		return vector(0, 1, 0); // Top cap (to be implemented)
+		return vector(0, 1, 0); // Top cap 
 
 	if (dist < 1 && object_point.y <= s->cylinder.minimum + EPSILON)
-		return vector(0, -1, 0); // Bottom cap (to be implemented)
+		return vector(0, -1, 0); // Bottom cap 
 
 	return vector(object_point.x, 0, object_point.z);
 }
