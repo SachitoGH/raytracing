@@ -38,7 +38,7 @@ world default_world(void)
 	//plane floor
 	w.objects[3] = create_plane();
 	w.objects[3].material.color = color(1.0f, 1.0f, 1.0f);
-	w.objects[3].material.reflective = 0.3f;
+	// w.objects[3].material.reflective = 0.3f;
 	w.objects[3].material.pattern = checker_pattern(color(1, 1, 1), color(0, 0, 0));;
 	temp1 = translation(0.0f, -1.0f, 0.0f);
 	temp2 = rotation_x(0.0f);

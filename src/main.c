@@ -32,7 +32,7 @@ int main(void)
 {
 	int		width	= 1440;
 	int		height	= 768;
-    canvas	c		= simple(width, height, 70, 1);
+    canvas	c		= simple(width, height, 70, 2);
 	void	*mlx	= mlx_init();
 	void	*win	= mlx_new_window(mlx, width, height, "MiniRT");
 	void	*img	= canvas_to_img(&c, mlx);

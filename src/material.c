@@ -5,10 +5,10 @@ material create_glass_material(void)
     material m;
     m.color = color(1.0f, 1.0f, 1.0f);
     m.pattern.type = UNSET;
-    m.ambient = 0.1f;
+    m.ambient = 0.0f;
     m.diffuse = 0.0f;
-    m.specular = 1.0f;
-    m.shininess = 200.0f;
+    m.specular = 0.9f;
+    m.shininess = 300.0f;
     m.reflective = 0.9f;
     m.transparency = 1.0f;
     m.refractive_index = 1.5f;

@@ -332,5 +332,4 @@ typedef struct
 void start_timer(timer *t);
 void print_elapsed_time(timer *t);
 
-
 #endif

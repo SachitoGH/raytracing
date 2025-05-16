@@ -273,6 +273,8 @@ tuple ray_for_pixel(camera cam, matrix *inv, tuple origin, int px, int py)
 
 canvas render(camera cam, world w)
 {
+	timer t;
+	start_timer(&t);
 	canvas	image = create_canvas(cam.hsize, cam.vsize);
 	matrix	inv = inverse(&cam.transform);
 	ray		r;
@@ -286,12 +288,15 @@ canvas render(camera cam, world w)
 			write_pixel(&image, x, y, color_at(w, r, 4));
 		}
 	}
+	print_elapsed_time(&t);
 	return image;
 }
 
 canvas low_render(camera cam, world w, int step)
 {
-    canvas	image = create_canvas(cam.hsize, cam.vsize);
+	timer t;
+	start_timer(&t);
+	canvas	image = create_canvas(cam.hsize, cam.vsize);
 	matrix	inv = inverse(&cam.transform);
 	ray		r;
 
@@ -314,5 +319,6 @@ canvas low_render(camera cam, world w, int step)
             }
         }
     }
+	print_elapsed_time(&t);
     return image;
 }

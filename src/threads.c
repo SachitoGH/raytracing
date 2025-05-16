@@ -1,8 +1,6 @@
 #include "raytracing.h"
 #include <pthread.h>
-#include <sys/time.h>
-
-#include <pthread.h>
+#include <sys/sysinfo.h>
 
 // Structure to pass data to threads
 typedef struct 
@@ -33,8 +31,6 @@ void* render_portion(void* arg)
 
     return NULL;
 }
-
-#include <sys/sysinfo.h>
 
 canvas thread_render(camera cam, world w)
 {
