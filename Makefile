@@ -3,6 +3,7 @@ NAME        = raytracing
 SRC         = challenge/simple.c \
 			  challenge/firstscene.c \
 			  challenge/test.c \
+			  challenge/color_scene.c \
 			  src/tuples.c \
 			  src/drawing.c \
 			  src/matrix.c	\

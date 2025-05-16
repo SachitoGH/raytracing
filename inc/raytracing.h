@@ -311,6 +311,8 @@ tuple	checker_at(pattern *p, tuple point);
 canvas simple(int width, int height, int fov, int step);
 canvas test(int	width, int height, int fov, int step);
 canvas first_scene(int	width, int height, int fov, int step);
+canvas color_scene(int width, int height, int fov);
+
 
 // material.c 
 
