@@ -142,6 +142,12 @@ matrix view_transform(tuple from, tuple to, tuple up)
 	return (matrix_multiply(&orientation, &translation_matrix));
 }
 
+void set_camera_transform(camera *cam, matrix transform)
+{
+    cam->transform = transform;
+    cam->inverse_transform = inverse(&transform);
+    cam->origin = matrix_multiply_tuple(&cam->inverse_transform, point(0.0f, 0.0f, 0.0f));
+}
 
 camera	create_camera(int hsize, int vsize, float fov)
 {
@@ -150,6 +156,8 @@ camera	create_camera(int hsize, int vsize, float fov)
 	cam.vsize = vsize;
 	cam.fov = fov * DEG_RADIANTS; //convert to rad
 	cam.transform = matrix_identity(4);
+	cam.inverse_transform = matrix_identity(4);
+	cam.origin = point(0.0f, 0.0f, 0.0f);
 
 	float half_view = tanf(cam.fov / 2);
 	float aspect = (float)hsize / (float)vsize;

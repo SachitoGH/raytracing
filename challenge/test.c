@@ -29,7 +29,7 @@ canvas test(int	width, int height, int fov, int step)
 
 	// Camera
 	camera cam = create_camera(width, height, fov); // π/3 radians = 60 degrees
-	cam.transform = view_transform(point(0, 0, 0), point(0, 0, 1), vector(0, 1, 0));
+	set_camera_transform(&cam, view_transform(point(0, 0, 0), point(0, 0, 1), vector(0, 1, 0)));
 
 	// Render
 	canvas	image;

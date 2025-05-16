@@ -276,15 +276,14 @@ canvas render(camera cam, world w)
 	timer t;
 	start_timer(&t);
 	canvas	image = create_canvas(cam.hsize, cam.vsize);
-	matrix	inv = inverse(&cam.transform);
 	ray		r;
 
-	r.origin = matrix_multiply_tuple(&inv, point(0.0f, 0.0f, 0.0f));
+	r.origin = cam.origin;
 	for (int y = 0; y < cam.vsize; y++)
 	{
 		for (int x = 0; x < cam.hsize; x++)
 		{
-			r.direction = ray_for_pixel(cam, &inv, r.origin, x, y);
+			r.direction = ray_for_pixel(cam, &cam.inverse_transform, r.origin, x, y);
 			write_pixel(&image, x, y, color_at(w, r, 4));
 		}
 	}
@@ -297,16 +296,15 @@ canvas low_render(camera cam, world w, int step)
 	timer t;
 	start_timer(&t);
 	canvas	image = create_canvas(cam.hsize, cam.vsize);
-	matrix	inv = inverse(&cam.transform);
 	ray		r;
 
-	r.origin = matrix_multiply_tuple(&inv, point(0.0f, 0.0f, 0.0f));
+	r.origin = cam.origin;
     // Render every 'step'th pixel
     for (int y = 0; y < cam.vsize; y += step)
     {
         for (int x = 0; x < cam.hsize; x += step)
         {
-            r.direction = ray_for_pixel(cam, &inv, r.origin, x, y);
+            r.direction = ray_for_pixel(cam, &cam.inverse_transform, r.origin, x, y);
             tuple color_at_pixel = color_at(w, r, 4);
 
             // Write the computed color to a block of pixels

@@ -6,7 +6,7 @@ canvas simple(int width, int height, int fov, int step)
 
 	// w.objects[1].material = create_glass_material();
 	camera cam = create_camera(width, height, fov);
-	cam.transform = view_transform(point(0, 2, -10), point(0, 0, 0), vector(0, 1, 0));
+	set_camera_transform(&cam, view_transform(point(0, 2, -10), point(0, 0, 0), vector(0, 1, 0)));
 
 	canvas	image;
 	(void)step;
@@ -16,7 +16,6 @@ canvas simple(int width, int height, int fov, int step)
 	// 	image = low_render(cam, w, step);
 	// else
 	// 	image = render(cam, w);
-	canvas_to_ppm(&image, "scene.ppm");
 	destroy_world(&w);
 	return (image);
 }

@@ -168,6 +168,8 @@ typedef struct s_computation
 typedef	struct
 {
 	matrix transform;
+	matrix inverse_transform;
+	tuple origin;
 	int hsize;
 	int vsize;
 	float fov;
@@ -246,6 +248,7 @@ intersections intersect_world(world w, ray r);
 intersections	intersect(shape *object, ray r);
 matrix view_transform(tuple from, tuple to, tuple up);
 camera	create_camera(int hsize, int vsize, float fov);
+void set_camera_transform(camera *cam, matrix transform);
 
 // ray.c
 ray	create_ray(tuple origin, tuple direction);
