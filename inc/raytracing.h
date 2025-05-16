@@ -322,4 +322,14 @@ material	create_material(void);
 // threads.c
 canvas thread_render(camera cam, world w);
 
+// utils.c
+typedef struct
+{
+    struct timespec start;
+} timer;
+
+void start_timer(timer *t);
+void print_elapsed_time(timer *t);
+
+
 #endif

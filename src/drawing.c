@@ -5,12 +5,7 @@ canvas create_canvas(int width, int height)
     canvas c;
     c.width = width;
     c.height = height;
-    c.pixels = (tuple*)malloc(width * height * sizeof(tuple));
-
-    // Initialize all pixels to black (0, 0, 0)
-    for (int i = 0; i < width * height; ++i) {
-        c.pixels[i] = vector(0.0f, 0.0f, 0.0f);
-    }
+    c.pixels = malloc(height * width * sizeof(tuple));
     return c;
 }
 

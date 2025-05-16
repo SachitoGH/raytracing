@@ -271,23 +271,11 @@ tuple ray_for_pixel(camera cam, matrix *inv, tuple origin, int px, int py)
     return direction;
 }
 
-void	printf_time(clock_t start, clock_t end)
-{
-	clock_t time;
-	
-	time = end - start;
-	int minutes = (int)(time / (CLOCKS_PER_SEC * 60.0f));
-    int seconds = (int)(time / ((float) CLOCKS_PER_SEC)) % 60;
-    int milliseconds = (int)((time % CLOCKS_PER_SEC) * 1000 / CLOCKS_PER_SEC);
-    printf("Time: %im %02is %ims\n", minutes, seconds, milliseconds);
-}
-
 canvas render(camera cam, world w)
 {
 	canvas	image = create_canvas(cam.hsize, cam.vsize);
 	matrix	inv = inverse(&cam.transform);
 	ray		r;
-	clock_t	start = clock();
 
 	r.origin = matrix_multiply_tuple(&inv, point(0.0f, 0.0f, 0.0f));
 	for (int y = 0; y < cam.vsize; y++)
@@ -298,7 +286,6 @@ canvas render(camera cam, world w)
 			write_pixel(&image, x, y, color_at(w, r, 4));
 		}
 	}
-	printf_time(start, clock());
 	return image;
 }
 
@@ -307,7 +294,6 @@ canvas low_render(camera cam, world w, int step)
     canvas	image = create_canvas(cam.hsize, cam.vsize);
 	matrix	inv = inverse(&cam.transform);
 	ray		r;
-	clock_t	start = clock();
 
 	r.origin = matrix_multiply_tuple(&inv, point(0.0f, 0.0f, 0.0f));
     // Render every 'step'th pixel
@@ -328,6 +314,5 @@ canvas low_render(camera cam, world w, int step)
             }
         }
     }
-	printf_time(start, clock());
     return image;
 }

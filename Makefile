@@ -17,7 +17,8 @@ SRC         = challenge/simple.c \
 			  src/main.c \
 			  src/cylinder.c \
 			  src/material.c \
-			  src/threads.c
+			  src/threads.c \
+			  src/utils.c
 
 OBJ         = $(SRC:.c=.o)
 
