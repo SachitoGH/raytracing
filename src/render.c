@@ -49,15 +49,95 @@ bool is_shadowed(world w, tuple p, light l)
 }
 
 
-tuple		shade_hit(world w, computation c, int remaining)
+static bool refracted_ray(computation* comps, ray* out_ray) {
+    float n_ratio = comps->n1 / comps->n2;
+    float cos_i = dot(comps->eyev, comps->normalv);
+    float sin2_t = n_ratio * n_ratio * (1.0f - cos_i * cos_i);
+
+    // Total internal reflection if sin2_t > 1
+    if (sin2_t > 1.0f) {
+        return false;
+    }
+
+    float cos_t = sqrtf(1.0f - sin2_t);
+    tuple direction = add_tuple(
+        mult_tuple_scalar(comps->normalv, n_ratio * cos_i - cos_t),
+        mult_tuple_scalar(comps->eyev, -n_ratio)
+    );
+    *out_ray = create_ray(comps->under_point, normalize(direction));
+    return true;
+}
+
+// Schlick approximation for Fresnel effect
+static float schlick(computation* comps)
 {
-	tuple	res = color(0.0f, 0.0f, 0.0f);
-	for (int i = 0; i < w.light_count; i++)
+    float cos_i = dot(comps->eyev, comps->normalv);
+
+    // Adjust cos_i for total internal reflection
+    if (comps->n1 > comps->n2)
 	{
-		res = add_tuple(res, lighting(c.object.material, c.object, w.lights[i], c.point, c.eyev, c.normalv, is_shadowed(w, c.over_point, w.lights[i])));
-		res = add_tuple(res, reflected_color(w, c, remaining));
-	}
-	return (res);
+        float n_ratio = comps->n1 / comps->n2;
+        float sin2_t = n_ratio * n_ratio * (1.0f - cos_i * cos_i);
+        if (sin2_t > 1.0f)
+            return 1.0f; // Total reflection
+        float cos_t = sqrtf(1.0f - sin2_t);
+        cos_i = cos_t; // Use cos_t for grazing angles
+    }
+
+    float r0 = powf((comps->n1 - comps->n2) / (comps->n1 + comps->n2), 2);
+    float term = powf(1.0f - cos_i, 5);
+    return r0 + (1.0f - r0) * term;
+}
+
+tuple refracted_color(world w, computation comps, int remaining)
+{
+    if (comps.object.material.transparency < EPSILON || remaining <= 0) {
+        return color(0.0f, 0.0f, 0.0f);
+    }
+
+    ray refract_ray;
+    if (!refracted_ray(&comps, &refract_ray)) {
+        return color(0.0f, 0.0f, 0.0f); // Total internal reflection
+    }
+
+    tuple refract_color = color_at(w, refract_ray, remaining - 1);
+    return mult_tuple_scalar(refract_color, comps.object.material.transparency);
+}
+
+tuple shade_hit(world w, computation c, int remaining)
+{
+    tuple surface_color = color(0.0f, 0.0f, 0.0f);
+    for (int i = 0; i < w.light_count; i++)
+	{
+        surface_color = add_tuple(
+            surface_color,
+            lighting(
+                c.object.material,
+                c.object,
+                w.lights[i],
+                c.point,
+                c.eyev,
+                c.normalv,
+                is_shadowed(w, c.over_point, w.lights[i])
+            )
+        );
+    }
+
+    // Compute reflected and refracted colors
+    tuple reflected = reflected_color(w, c, remaining);
+    tuple refracted = refracted_color(w, c, remaining);
+
+    // Combine colors using Schlick approximation for transparent materials
+    if (c.object.material.transparency > EPSILON)
+	{
+        float reflectance = schlick(&c);
+        tuple reflect_component = mult_tuple_scalar(reflected, reflectance);
+        tuple refract_component = mult_tuple_scalar(refracted, 1.0f - reflectance);
+        return add_tuple(surface_color, add_tuple(reflect_component, refract_component));
+    }
+
+    // For opaque materials, combine surface and reflected colors
+    return add_tuple(surface_color, reflected);
 }
 
 tuple	color_at(world w, ray r, int remaining)
@@ -69,7 +149,7 @@ tuple	color_at(world w, ray r, int remaining)
 	computation		c;
 	c.t = i->t;
 	c.object = i->object;
-	prepare_computations(&c, r);
+	prepare_computations(&c, r, xs);
 	return (shade_hit(w, c, remaining));
 }
 
@@ -83,20 +163,95 @@ tuple reflected_color(world w, computation comps, int remaining)
     return (mult_tuple_scalar(color, comps.object.material.reflective));
 }
 
-
-void	prepare_computations(computation *comps, ray r)
+static void init_containers(containers* c)
 {
-	comps->point = position(r, comps->t);
-	comps->eyev = negate_tuple(r.direction);
-	comps->normalv = normal_at(&comps->object, comps->point);
-	comps->inside = dot(comps->normalv, comps->eyev) < EPSILON;
-	if (comps->inside)
-		comps->normalv = negate_tuple(comps->normalv);
+    c->count = 0;
+}
 
-	// Avoid shadow acne by pushing the point slightly above the surface
-	tuple offset = mult_tuple_scalar(comps->normalv, 0.01f);
-	comps->over_point = add_tuple(comps->point, offset);
-	comps->reflectv = reflect(r.direction, comps->normalv);
+static void add_container(containers* c, shape* obj)
+{
+    if (c->count < MAX_INTERSECTIONS)
+        c->objects[c->count++] = obj;
+}
+
+static void remove_container(containers* c, shape* obj)
+{
+    for (int i = 0; i < c->count; i++)
+	{
+        if (c->objects[i] == obj)
+		{
+            c->objects[i] = c->objects[--c->count]; // Replace with last
+            break;
+        }
+    }
+}
+
+static bool contains(containers* c, shape* obj)
+{
+    for (int i = 0; i < c->count; i++)
+        if (c->objects[i] == obj)
+			return true;
+    return false;
+}
+
+static void compute_refractive_indices(computation* comps, intersections xs)
+{
+	containers containers;
+
+    init_containers(&containers);
+
+    for (int i = 0; i < xs.count; i++) {
+        intersection* current = &xs.list[i];
+
+        // Check if current intersection is the hit
+        if (equal(current->t, comps->t) && current->object.id == comps->object.id) {
+            // Set n1: refractive index of medium ray is coming from
+            if (containers.count == 0) {
+                comps->n1 = 1.0f; // Air
+            } else {
+                comps->n1 = containers.objects[containers.count - 1]->material.refractive_index;
+            }
+
+            // Set n2: refractive index of medium ray is entering
+            if (contains(&containers, &comps->object)) {
+                remove_container(&containers, &comps->object);
+                if (containers.count == 0) {
+                    comps->n2 = 1.0f; // Exiting into air
+                } else {
+                    comps->n2 = containers.objects[containers.count - 1]->material.refractive_index;
+                }
+            } else {
+                comps->n2 = comps->object.material.refractive_index; // Entering hit object
+            }
+            break; // Stop after processing the hit
+        }
+
+        // Toggle container
+        if (contains(&containers, &current->object)) {
+            remove_container(&containers, &current->object);
+        } else {
+            add_container(&containers, &current->object);
+        }
+    }
+}
+
+void prepare_computations(computation *comps, ray r, intersections xs)
+{
+    comps->point = position(r, comps->t);
+    comps->eyev = negate_tuple(r.direction);
+    comps->normalv = normal_at(&comps->object, comps->point);
+    comps->inside = dot(comps->normalv, comps->eyev) < EPSILON;
+    if (comps->inside)
+        comps->normalv = negate_tuple(comps->normalv);
+
+    // Avoid shadow acne by pushing the point slightly above the surface
+    tuple offset = mult_tuple_scalar(comps->normalv, 0.01f);
+    comps->over_point = add_tuple(comps->point, offset);
+    comps->under_point = sub_tuple(comps->point, offset);
+    comps->reflectv = reflect(r.direction, comps->normalv);
+
+    // Compute n1 and n2 for refraction
+	compute_refractive_indices(comps, xs);
 }
 
 tuple ray_for_pixel(camera cam, matrix *inv, tuple origin, int px, int py)

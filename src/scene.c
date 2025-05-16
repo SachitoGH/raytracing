@@ -18,13 +18,13 @@ world default_world(void)
     //  sphere
     w.objects[0] = create_sphere(); // Using the create_sphere function from your previous code
 	temp1 = scaling(1, 1, 1);
-	temp2 = translation(-2.0f, 0.0f, 0.0f);
+	temp2 = translation(-1.0f, 0.0f, 0.0f);
 	w.objects[0].transform = matrix_multiply(&temp1, &temp2);
     
     // cube
     w.objects[1] = create_cube();
 	w.objects[1].material.color = color(1.0f, 0.6f, 0.0f);
-	temp1 = translation(3.0f, 0.0f, -1.0f);
+	temp1 = translation(3.0f, 0.0f, -2.0f);
 	temp2 = rotation_y(45.0f);
 	w.objects[1].transform = matrix_multiply(&temp1, &temp2);
 	// w.objects[1].material.pattern = checker_pattern(color(1, 1, 1), color(0, 0, 0));
@@ -168,17 +168,4 @@ camera	create_camera(int hsize, int vsize, float fov)
 	cam.pixel_size = (cam.half_width * 2) / hsize;
 
 	return (cam);
-}
-
-material	create_material(void)
-{
-	material	m;
-	m.color = color(1, 1, 1);
-	m.ambient = 0.1f;
-	m.diffuse = 0.9f;
-	m.specular = 0.9f;
-	m.shininess = 200.0f;
-	m.pattern.type = UNSET;
-	m.reflective = 0.0f;
-	return (m);
 }

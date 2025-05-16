@@ -74,6 +74,8 @@ typedef struct
 	float	specular;
 	float	shininess;
 	float	reflective;
+	float	transparency;
+	float	refractive_index;
 }	material;
 
 typedef struct
@@ -134,6 +136,12 @@ typedef struct s_intersections
 }	intersections;
 
 typedef struct
+{
+    shape* objects[MAX_INTERSECTIONS];
+    int count;
+} containers;
+
+typedef struct
 {	
 	shape	*objects;
 	light	*lights;
@@ -148,9 +156,12 @@ typedef struct s_computation
 	tuple	eyev;       // the eye (view) vector
 	tuple	normalv;    // the normal vector at the point
 	tuple	over_point;
+	tuple	under_point;
 	tuple	reflectv;
 	float	t;
 	bool	inside;     // true if the intersection occurs inside the object
+	float	n1;
+	float	n2;
 }	computation;
 
 typedef	struct
@@ -234,7 +245,6 @@ intersections intersect_world(world w, ray r);
 intersections	intersect(shape *object, ray r);
 matrix view_transform(tuple from, tuple to, tuple up);
 camera	create_camera(int hsize, int vsize, float fov);
-material	create_material(void);
 
 // ray.c
 ray	create_ray(tuple origin, tuple direction);
@@ -252,7 +262,7 @@ tuple	lighting(material m, shape object, light l, tuple p, tuple eyev, tuple nor
 bool is_shadowed(world w, tuple p, light l);
 tuple		shade_hit(world w, computation c, int remaining);
 tuple	color_at(world w, ray r, int remaining);
-void	prepare_computations(computation *c, ray r);
+void	prepare_computations(computation *comps, ray r, intersections xs);
 tuple ray_for_pixel(camera cam, matrix *inv, tuple origin, int px, int py);
 canvas render(camera cam, world w);
 canvas low_render(camera cam, world w, int step);
@@ -299,5 +309,14 @@ tuple	checker_at(pattern *p, tuple point);
 canvas simple(int width, int height, int fov, int step);
 canvas test(int	width, int height, int fov, int step);
 canvas first_scene(int	width, int height, int fov, int step);
+
+// material.c 
+
+material create_glass_material(void);
+material create_mirror_material(void);
+material create_matte_material(tuple color);
+material create_metal_material(tuple color);
+material	create_material(void);
+
 
 #endif

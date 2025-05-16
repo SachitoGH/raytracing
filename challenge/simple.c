@@ -4,6 +4,7 @@ canvas simple(int width, int height, int fov, int step)
 {
 	world w = default_world();
 
+	// w.objects[1].material.pattern = checker_pattern(color);
 	camera cam = create_camera(width, height, fov);
 	cam.transform = view_transform(point(0, 2, -10), point(0, 0, 0), vector(0, 1, 0));
 
