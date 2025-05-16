@@ -267,6 +267,7 @@ tuple ray_for_pixel(camera cam, matrix *inv, tuple origin, int px, int py);
 canvas render(camera cam, world w);
 canvas low_render(camera cam, world w, int step);
 tuple reflected_color(world w, computation comps, int remaining);
+void	printf_time(clock_t start, clock_t end);
 
 // sphere.c
 
@@ -318,5 +319,7 @@ material create_matte_material(tuple color);
 material create_metal_material(tuple color);
 material	create_material(void);
 
+// threads.c
+canvas thread_render(camera cam, world w);
 
 #endif

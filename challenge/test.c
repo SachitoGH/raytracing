@@ -33,10 +33,13 @@ canvas test(int	width, int height, int fov, int step)
 
 	// Render
 	canvas	image;
-	if (step > 1)
-		image = low_render(cam, w, step);
-	else
-		image = render(cam, w);
+	(void)step;
+	image = thread_render(cam, w);
+
+	// if (step > 1)
+	// 	image = low_render(cam, w, step);
+	// else
+	// 	image = render(cam, w);
 	destroy_world(&w);
 	return (image);
 }

@@ -9,10 +9,13 @@ canvas simple(int width, int height, int fov, int step)
 	cam.transform = view_transform(point(0, 2, -10), point(0, 0, 0), vector(0, 1, 0));
 
 	canvas	image;
-	if (step > 1)
-		image = low_render(cam, w, step);
-	else
-		image = render(cam, w);
+	(void)step;
+
+	image = thread_render(cam, w);
+	// if (step > 1)
+	// 	image = low_render(cam, w, step);
+	// else
+	// 	image = render(cam, w);
 	// canvas_to_ppm(&image, "scene.ppm");
 	destroy_world(&w);
 	return (image);
