@@ -7,7 +7,7 @@ shape create_cube(void)
 
     c.type = SHAPE_CUBE;
     c.id = id++;
-    c.transform = matrix_identity(4);
+    set_transform(&c, matrix_identity(4));
     c.material = create_material();
     c.intersect = &cube_intersect;
     c.normal_at = &cube_normal_at;

@@ -7,7 +7,7 @@ shape	create_sphere(void)
 
 	s.type = SHAPE_SPHERE;
 	s.id = id++;
-	s.transform = matrix_identity(4);
+	set_transform(&s, matrix_identity(4));
 	s.material = create_material();
 	s.intersect = &sphere_intersect;
 	s.normal_at = &sphere_normal_at;

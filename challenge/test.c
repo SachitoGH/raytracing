@@ -21,7 +21,7 @@ canvas test(int	width, int height, int fov, int step)
 
     // Middle sphere
 	w.objects[i] = create_sphere();
-	w.objects[i].transform = translation(0, 0, 7);
+	set_transform(&w.objects[i], translation(0,0,7));
 	w.objects[i].material.color = color(1, 1, 1);
 	w.objects[i].material.diffuse = 0.7;
 	w.objects[i].material.specular = 0;

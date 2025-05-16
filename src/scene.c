@@ -19,21 +19,21 @@ world default_world(void)
     w.objects[0] = create_sphere(); // Using the create_sphere function from your previous code
 	temp1 = scaling(1, 1, 1);
 	temp2 = translation(-1.0f, 0.0f, 0.0f);
-	w.objects[0].transform = matrix_multiply(&temp1, &temp2);
+	set_transform(&w.objects[0], matrix_multiply(&temp1, &temp2));
     
     // cube
     w.objects[1] = create_cube();
 	w.objects[1].material.color = color(1.0f, 0.6f, 0.0f);
 	temp1 = translation(3.0f, 0.0f, -2.0f);
 	temp2 = rotation_y(45.0f);
-	w.objects[1].transform = matrix_multiply(&temp1, &temp2);
+	set_transform(&w.objects[1], matrix_multiply(&temp1, &temp2));
 	// w.objects[1].material.pattern = checker_pattern(color(1, 1, 1), color(0, 0, 0));
     // w.objects[1].transform = scaling(0.5f, 0.5f, 0.5f);
 
 	// cylinder
 	w.objects[2] = create_cylinder();
 	w.objects[2].material.color = color(0.6f, 1.0f, 0.0f);
-	w.objects[2].transform = translation(-3.5f, 0.0f, -3.0f);
+	set_transform(&w.objects[2], translation(-3.5f, 0.0f, -3.0f));
 
 	//plane floor
 	w.objects[3] = create_plane();
@@ -42,7 +42,7 @@ world default_world(void)
 	w.objects[3].material.pattern = checker_pattern(color(1, 1, 1), color(0, 0, 0));;
 	temp1 = translation(0.0f, -1.0f, 0.0f);
 	temp2 = rotation_x(0.0f);
-	w.objects[3].transform = matrix_multiply(&temp1, &temp2);
+	set_transform(&w.objects[3], matrix_multiply(&temp1, &temp2));
 
 	//plane front wall
 	w.objects[4] = create_plane();
@@ -51,8 +51,8 @@ world default_world(void)
 	w.objects[4].material.pattern.transform = scaling(20, 1, 1);
 	temp1 = translation(10.0f, 0.0f, 3.0f);
 	temp2 = rotation_x(90.0f);
-	w.objects[4].transform = matrix_multiply(&temp1, &temp2);
-	
+	set_transform(&w.objects[4], matrix_multiply(&temp1, &temp2));
+
     return w;
 }
 
@@ -114,8 +114,7 @@ intersections intersect_world(world w, ray r)
 
 intersections intersect(shape *object, ray r)
 {
-	matrix	temp = inverse(&object->transform);
-	ray	local_ray = transform(r, &temp);
+	ray	local_ray = transform(r, &object->inverse_transform);
     return (object->intersect(object, local_ray));
 }
 

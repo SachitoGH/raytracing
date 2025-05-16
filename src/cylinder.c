@@ -7,7 +7,7 @@ shape create_cylinder(void)
 
 	s.type = SHAPE_CYLINDER;
 	s.id = id++;
-	s.transform = matrix_identity(4);
+	set_transform(&s, matrix_identity(4));
 	s.material = create_material();
 	s.intersect = &cylinder_intersect;
 	s.normal_at = &cylinder_normal_at;

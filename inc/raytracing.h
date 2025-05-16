@@ -108,6 +108,7 @@ typedef struct s_shape
 {
     shape_type type;
     matrix transform;
+	matrix inverse_transform;
     material material;
 
     // Use function pointers with forward-declared intersection type

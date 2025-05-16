@@ -3,6 +3,7 @@
 void	set_transform(shape *s, matrix t)
 {
 	s->transform = t;
+	s->inverse_transform = inverse(&t);
 }
 
 matrix translation(float tx, float ty, float tz)

@@ -7,7 +7,7 @@ shape	create_plane(void)
 
 	p.type = SHAPE_PLANE;
 	p.id = i;
-	p.transform = matrix_identity(4);
+	set_transform(&p, matrix_identity(4));
 	p.material = create_material();
 	p.intersect = &plane_intersect;
 	p.normal_at = &plane_normal_at;
