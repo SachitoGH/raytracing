@@ -20,7 +20,7 @@ Currently you can only change the scene rendered by modifying the code, some ppm
 
 ## Features
 
-- Shape: Sphere / Plane / Cube
+- Shape: Sphere / Plane / Cube / Cylindre
 - Pattern: Checker, gradient, ring, stripe
 - Reflections 
-
+- Transparency / Refraction
