@@ -10,7 +10,7 @@ world default_world(void)
     w.light_count = 1;
 	w.lights = malloc(sizeof(light) * w.light_count);
 	w.lights[0] = point_light(point(-10.0f, 10.0f, -10.0f), color(1.0f, 1.0f, 1.0f));
-    
+
     // Allocate memory for 1 sphere, 1 cube, 1 cylinder and a 3 planes
     w.object_count = 5;
     w.objects = malloc(sizeof(shape) * w.object_count);

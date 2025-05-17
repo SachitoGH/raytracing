@@ -20,11 +20,11 @@ canvas test(int	width, int height, int fov, int step)
 	i++;*/
 
     // Middle sphere
-	w.objects[i] = create_sphere();
-	set_transform(&w.objects[i], translation(0,0,7));
-	w.objects[i].material.color = color(1, 1, 1);
-	w.objects[i].material.diffuse = 0.7;
-	w.objects[i].material.specular = 0;
+	w.objects[0] = create_sphere();
+	set_transform(&w.objects[0], translation(0,0,7));
+	w.objects[0].material.color = color(1, 1, 1);
+	w.objects[0].material.diffuse = 0.7;
+	w.objects[0].material.specular = 0;
 	i++;
 
 	// Camera
