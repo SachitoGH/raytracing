@@ -18,7 +18,7 @@ world default_world(void)
     //  sphere
     w.objects[0] = create_sphere(); // Using the create_sphere function from your previous code
 	temp1 = scaling(1, 1, 1);
-	temp2 = translation(-1.0f, 0.0f, 0.0f);
+	temp2 = translation(-1.0f, -0.5f, 0.0f);
 	set_transform(&w.objects[0], matrix_multiply(&temp1, &temp2));
     
     // cube

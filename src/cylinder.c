@@ -82,4 +82,3 @@ tuple cylinder_normal_at(shape *s, tuple object_point)
 
 	return vector(object_point.x, 0, object_point.z);
 }
-

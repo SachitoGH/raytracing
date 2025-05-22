@@ -88,7 +88,8 @@ typedef enum {
 	SHAPE_SPHERE,
 	SHAPE_PLANE,
 	SHAPE_CUBE,
-	SHAPE_CYLINDER
+	SHAPE_CYLINDER,
+	SHAPE_CONE
 	//..
 } shape_type;
 
@@ -296,6 +297,10 @@ shape create_cylinder(void);
 intersections cylinder_intersect(shape *s, ray local_ray);
 tuple cylinder_normal_at(shape *s, tuple object_point);
 
+// cone.c
+shape create_cone(void);
+tuple cone_normal_at(shape *s, tuple p);
+intersections cone_intersect(shape *cone, ray r);
 
 // patterns.c
 

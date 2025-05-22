@@ -17,6 +17,7 @@ SRC         = challenge/simple.c \
 			  src/patterns.c \
 			  src/main.c \
 			  src/cylinder.c \
+			  src/cone.c \
 			  src/material.c \
 			  src/threads.c \
 			  src/utils.c
